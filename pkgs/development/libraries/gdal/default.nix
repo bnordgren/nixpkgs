@@ -1,12 +1,11 @@
-{ stdenv, fetchurl, composableDerivation, unzip, libjpeg, libtiff, zlib
-, postgresql, mysql, libgeotiff }:
+{ stdenv, fetchurl, composableDerivation, unzip, libjpeg, libtiff, zlib, postgresql, mysql, libgeotiff }:
 
 composableDerivation.composableDerivation {} (fixed: {
-  name = "gdal-1.7.1";
+  name = "gdal-1.9.0";
 
   src = fetchurl {
-    url = ftp://ftp.remotesensing.org/gdal/gdal171.zip;
-    md5 = "f5592cff69b239166c9b64ff81943b1a";
+    url = http://download.osgeo.org/gdal/gdal-1.9.0.tar.gz ;
+    md5 = "1853f3d8eb5232ae030abe007840cade" ; 
   };
 
   buildInputs = [ unzip libjpeg ];

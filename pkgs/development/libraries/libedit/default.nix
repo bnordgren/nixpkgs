@@ -1,11 +1,11 @@
 { stdenv, fetchurl, ncurses, groff }:
 
 stdenv.mkDerivation rec {
-  name = "libedit-20100424-3.0";
+  name = "libedit-20110802-3.0";
 
   src = fetchurl {
     url = "http://www.thrysoee.dk/editline/${name}.tar.gz";
-    sha256 = "11hxaq58gym7kqccjhxywjxdibffzg545z1aj997y1dn0rckhav0";
+    sha256 = "0wcamisq6pj7hsk6apnqpb0bk34x7vcss6bqv8f7dzzs86mcjphb";
   };
 
   # Have `configure' avoid `/usr/bin/nroff' in non-chroot builds.

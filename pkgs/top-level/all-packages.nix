@@ -5167,7 +5167,7 @@ let
 
   openfire = callPackage ../servers/xmpp/openfire { };
 
-  postgresql = postgresql83;
+  postgresql = postgresql90;
 
   postgresql83 = callPackage ../servers/sql/postgresql/8.3.x.nix { };
 

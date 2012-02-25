@@ -1,4 +1,4 @@
-args@{fetchurl, composableDerivation, stdenv, perl, libxml2, postgresql, geos, proj, flex, ...}:
+args@{fetchurl, composableDerivation, stdenv, perl, libxml2, postgresql, geos, proj, flex, gdal, autoconf,  ...}:
 
   /*
 
@@ -116,6 +116,8 @@ let
 
 in rec {
 
+
+
   # these builders just add some custom informaton to the receipe above
 
   v_1_3_5 = pgDerivationBase.merge ( fix: {
@@ -147,5 +149,43 @@ in rec {
     sql_srcs = ["postgis.sql" "spatial_ref_sys.sql"];
   });
 
+  v_2_0_0a4 = pgDerivationBase.merge ( fix : {
+    version = "2.0.0alpha4";
+    builder = ./postgis2-builder.sh ;
+    buildInputs = [ autoconf  ] ; 
+    sha256 = "700ddcbdc7d2a17024762e1bb91a40f6769b7efd71816e5afcd3f9b5535a6274";
+    sql_srcs = ["postgis.sql" "spatial_ref_sys.sql"];
+    configureFlags="--enable-static --with-gdalconfig=${gdal}/bin/gdal-config --datadir=$out/share --datarootdir=$out/share --bindir=$out/bin";
+    preConfigure = ''
+      ./autogen.sh
+      makeFlags="PERL=${perl}/bin/perl datadir=$out/share pkglibdir=$out/lib bindir=$out/bin"
+    '';
+
+#    postConfigure = ''
+#      sed -i 's|^build_old_libs=yes|build_old_libs=no|g' libtool
+#      sed -i 's|^dlopen_support=unknown|dlopen_support=yes|g' libtool
+#      sed -i 's|^dlopen_self=unknown|dlopen_self=yes|g' libtool
+#      sed -i 's|^dlopen_self_static=unknown|dlopen_self_static=no|g' libtool
+#      sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec="\''${wl}-rpath \''${wl}\$libdir"|g' libtool
+#      sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=LD_LIBRARY_PATH|g' libtool
+#    '';
+
+    scriptNames = [ "pg_db_postgis2_enable" ]; # helper scripts
+
+    # prepare fixed parameters for script and create pg_db_postgis_enable script.
+    # The script just loads postgis features into a list of given databases
+    postgisEnableScript = ''
+      s=$out/bin/pg_db_postgis2_enable
+
+      for script in $scriptNames; do
+        tg=$out/bin/$script
+        substituteAll ''${!script} $tg
+        chmod +x $tg
+      done
+    '';
+
+  });
+
 }
+
 
