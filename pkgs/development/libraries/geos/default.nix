@@ -10,11 +10,11 @@ composableDerivation.composableDerivation {} {
     # (if args.use_svn then ["libtool" "autoconf" "automake" "swig"] else [])
     # // edf { name = "ruby"; enable = { buildInputs = [ ruby ]; };}
 
-  name = "geos-3.3.2";
+  name = "geos-3.3.3";
 
   src = fetchurl {
-    url = http://download.osgeo.org/geos/geos-3.3.2.tar.bz2;
-    sha256 = "ec64d3a92540a1618aa3b91dc1235caae1c370ec23afd59a2734062bf182ed5b" ;
+    url = http://download.osgeo.org/geos/geos-3.3.3.tar.bz2;
+    sha256 = "1jfypprjx263zpd5caq98njh3wa88yw027fjpavsa4mj1bblpkyz" ;
   };
 
   # for development version. can be removed ?

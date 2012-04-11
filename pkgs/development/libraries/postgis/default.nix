@@ -149,11 +149,11 @@ in rec {
     sql_srcs = ["postgis.sql" "spatial_ref_sys.sql"];
   });
 
-  v_2_0_0b2 = pgDerivationBase.merge ( fix : {
-    version = "2.0.0beta2";
+  v_2_0_0 = pgDerivationBase.merge ( fix : {
+    version = "2.0.0";
     builder = ./postgis2-builder.sh ;
     buildInputs = [ autoconf  ] ; 
-    sha256 = "05vzx9pqkbw0si1dhdryk83sx1i9inwh1fik1ksxhr0w206q9q6k"; 
+    sha256 = "108050dwkxckjj6ra0vhd4prwd5x4pd0yn81qmh1qhj8wcj9w5qj";
     sql_srcs = ["postgis.sql" "spatial_ref_sys.sql"];
     configureFlags="--enable-static --with-gdalconfig=${gdal}/bin/gdal-config --datadir=$out/share --datarootdir=$out/share --bindir=$out/bin";
     preConfigure = ''
