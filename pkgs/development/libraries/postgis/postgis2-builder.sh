@@ -3,7 +3,7 @@ source $stdenv/setup
 
 tar zxf $src
 
-cd postgis-2.0.0alpha4
+cd postgis-2.0.0beta2
 
 ./autogen.sh
 
