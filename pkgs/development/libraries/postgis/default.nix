@@ -60,7 +60,7 @@ let
     removeAttrs = ["hash" "sql_comments" "sql_srcs"];
 
     preConfigure = ''
-      configureFlags="--datadir=$out/share --datarootdir=$out/share --bindir=$out/bin"
+      configureFlags="--datadir=$out/share --datarootdir=$out/share --bindir=$out/bin --libdir=$out/lib"
       makeFlags="PERL=${perl}/bin/perl datadir=$out/share pkglibdir=$out/lib bindir=$out/bin"
     '';
 
