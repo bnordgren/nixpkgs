@@ -5038,6 +5038,8 @@ let
     sslSupport = true;
   };
 
+  geonetwork = callPackage ../servers/http/geonetwork { };
+
   sabnzbd = callPackage ../servers/sabnzbd { };
 
   bind = callPackage ../servers/dns/bind {
