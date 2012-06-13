@@ -1,11 +1,11 @@
 { fetchurl, stdenv, libtool, ncurses }:
 
 stdenv.mkDerivation rec {
-  name = "global-6.1";
+  name = "global-6.2.2";
 
   src = fetchurl {
     url = "mirror://gnu/global/${name}.tar.gz";
-    sha256 = "1q305isw1hy2zxcg10jk1g9rmpl8x2r3nkla52jdl4dbydsg6z39";
+    sha256 = "0a41d3wc22f05fqi5zpx1r22annsi4whdkjdmw50nidjca1vq5pj";
   };
 
   buildInputs = [ libtool ncurses ];
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
   doCheck = true;
 
   postInstall = ''
-    ensureDir "$out/share/emacs/site-lisp"
+    mkdir -p "$out/share/emacs/site-lisp"
     cp -v *.el "$out/share/emacs/site-lisp"
   '';
 

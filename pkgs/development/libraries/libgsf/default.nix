@@ -1,5 +1,5 @@
 { fetchurl, stdenv, perl, perlXMLParser, pkgconfig, libxml2
-, glib, gettext, intltool, bzip2, xz
+, glib, gettext, intltool, bzip2, gdk_pixbuf
 , gnome_vfs, libbonobo, python }:
 
 
@@ -11,9 +11,9 @@ stdenv.mkDerivation rec {
     sha256 = "0gvq1gbbcl078s3kgdc508jp7p3a3ps34fj4pf8vsamprbikpwm5";
   };
 
-  buildNativeInputs = [ xz intltool pkgconfig ];
+  buildNativeInputs = [ intltool pkgconfig ];
   buildInputs =
-    [ perl perlXMLParser gettext bzip2 gnome_vfs python ];
+    [ perl perlXMLParser gettext bzip2 gnome_vfs python gdk_pixbuf ];
 
   propagatedBuildInputs = [ glib libxml2 libbonobo ];
 

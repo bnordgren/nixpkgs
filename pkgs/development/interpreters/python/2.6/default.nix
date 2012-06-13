@@ -1,22 +1,19 @@
 { stdenv, fetchurl, zlib ? null, zlibSupport ? true, bzip2
 , sqlite, tcl, tk, x11, openssl, readline, db4, ncurses, gdbm
-, darwinArchUtility ? null, darwinSwVersUtility ? null
 }:
 
 assert zlibSupport -> zlib != null;
-assert stdenv.isDarwin -> darwinArchUtility != null;
-assert stdenv.isDarwin -> darwinSwVersUtility != null;
 
 with stdenv.lib;
 
 let
 
   majorVersion = "2.6";
-  version = "${majorVersion}.6";
+  version = "${majorVersion}.7";
 
   src = fetchurl {
     url = "http://www.python.org/ftp/python/${version}/Python-${version}.tar.bz2";
-    md5 = "cf4e6881bb84a7ce6089e4a307f71f14";
+    sha256 = "0p0fd8i533zsdm6gc0jmhmdifccx4v064mh0i1hl2s6fcjhc20j5";
   };
   
   patches =
@@ -33,8 +30,7 @@ let
   buildInputs =
     optional (stdenv ? gcc && stdenv.gcc.libc != null) stdenv.gcc.libc ++
     [ bzip2 ]
-    ++ optional zlibSupport zlib
-    ++ optionals stdenv.isDarwin [ darwinArchUtility darwinSwVersUtility ];
+    ++ optional zlibSupport zlib;
 
     
   # Build the basic Python interpreter without modules that have
@@ -75,7 +71,7 @@ let
 
     meta = {
       homepage = "http://python.org";
-      description = "Python -- a high-level dynamically-typed programming language";
+      description = "a high-level dynamically-typed programming language";
       longDescription = ''
         Python is a remarkably powerful dynamic programming language that
         is used in a wide variety of application domains. Some of its key
@@ -85,9 +81,9 @@ let
         hierarchical packages; exception-based error handling; and very
         high level dynamic data types.
       '';
-      license = "GPLv2";
+      license = stdenv.lib.licenses.psfl;
       platforms = stdenv.lib.platforms.all;
-      maintainers = [ stdenv.lib.maintainers.simons ];
+      maintainers = with stdenv.lib.maintainers; [ simons chaoflow ];
     };
   };
 

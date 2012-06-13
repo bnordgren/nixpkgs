@@ -15,7 +15,7 @@ stdenv.mkDerivation {
   buildInputs = [bison flex texinfo readline texLive];
 
   preConfigure = "sed -i 's/ginstall-info/install-info/g' doc/Makefile";
-  installPhase = "ensureDir $out/bin ; make PREFIX=$out install";
+  installPhase = "mkdir -p $out/bin ; make PREFIX=$out install";
 
   meta = {
     description = "Geometry Drawing Language";
@@ -31,7 +31,7 @@ stdenv.mkDerivation {
       circles and conics.
     '';
 
-    platforms = stdenv.lib.platforms.all;
+    platforms = stdenv.lib.platforms.linux;
     maintainers = [ stdenv.lib.maintainers.simons ];
   };
 }

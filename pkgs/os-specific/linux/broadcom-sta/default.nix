@@ -21,6 +21,8 @@ stdenv.mkDerivation {
     #(! builtins.lessThan (builtins.compareVersions kernel.version "2.6.37") 0)
       #[ ./mutex-sema.patch ];
 
+  NIX_CFLAGS_COMPILE = "-I${kernel}/lib/modules/${kernel.modDirVersion}/build/include/generated";
+
   makeFlags = "KDIR=${kernel}/lib/modules/${kernel.modDirVersion}/build";
 
   unpackPhase =
@@ -34,7 +36,7 @@ stdenv.mkDerivation {
     ''
       binDir="$out/lib/modules/${kernel.modDirVersion}/kernel/net/wireless/"
       docDir="$out/share/doc/broadcom-sta/"
-      ensureDir "$binDir" "$docDir"
+      mkdir -p "$binDir" "$docDir"
       cp wl.ko "$binDir"
       cp lib/LICENSE.txt "$docDir"
     '';

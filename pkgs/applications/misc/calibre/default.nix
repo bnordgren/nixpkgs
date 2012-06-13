@@ -4,16 +4,19 @@
 }:
 
 stdenv.mkDerivation rec {
-  name = "calibre-0.8.32";
+  name = "calibre-0.8.51";
 
   src = fetchurl {
-    url = "http://calibre-ebook.googlecode.com/files/${name}.tar.xz";
-    sha256 = "0d0zq4sr0qm8jarg0ps24lfizb4hyb57pjsp81y1sb5nzjki7jml";
+    urls = [ 
+      "http://calibre-ebook.googlecode.com/files/${name}.tar.xz"
+      "mirror://sourceforge/calibre/${name}.tar.xz"
+    ];
+    sha256 = "1grcc0k9qpfpwp863x52rl9wj4wz61hcz67l8h2jmli0wxiq44z1";
   };
 
   inherit python;
 
-  buildNativeInputs = [ makeWrapper xz pkgconfig ];
+  buildNativeInputs = [ makeWrapper pkgconfig ];
 
   buildInputs =
     [ python pyqt4 sip popplerQt4 libpng imagemagick libjpeg
@@ -41,11 +44,11 @@ stdenv.mkDerivation rec {
 
     sed -i "s/env python[0-9.]*/python/" $PYFILES
     for a in $out/bin/*; do
-      wrapProgram $a --prefix PYTHONPATH : $PYTHONPATH --prefix LD_LIBRARY_PATH : ${unrar}/lib
+      wrapProgram $a --prefix PYTHONPATH : $PYTHONPATH --prefix LD_LIBRARY_PATH : ${unrar}/lib --prefix PATH : ${popplerQt4}/bin
     done
   '';
 
-  meta = { 
+  meta = {
     description = "Comprehensive e-book software";
     homepage = http://calibre-ebook.com;
     license = "GPLv3";

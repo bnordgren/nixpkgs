@@ -7,15 +7,11 @@ cabal.mkDerivation (self: {
   isLibrary = true;
   isExecutable = true;
   buildDepends = [ MissingH mtl parsec ];
-  noHaddock = true;
   meta = {
     homepage = "http://software.complete.org/configfile";
     description = "Configuration file reading & writing";
     license = "LGPL";
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

@@ -1,11 +1,11 @@
 { stdenv, fetchurl, ghc, swiProlog, syb, mtl, makeWrapper, rlwrap, tk }:
 
 stdenv.mkDerivation {
-  name = "pakcs-1.9.2";
+  name = "pakcs-1.10.0";
 
   src = fetchurl {
     url = "http://www.informatik.uni-kiel.de/~pakcs/download/pakcs_src.tar.gz";
-    sha256 = "1sa6k4s5avn3qvica3a5zvb6q9vnawpp00zviqjwncwwd4a9bcwm";
+    sha256 = "6a4a45c9f3d0b61cfec8414943c2a852bec3665a7e2638b039193dd43e9802c4";
   };
 
   buildInputs = [ ghc swiProlog syb mtl makeWrapper rlwrap tk ];
@@ -17,6 +17,8 @@ stdenv.mkDerivation {
     # Remove copying pakcsinitrc into $HOME
     sed -i '68d' configure-pakcs
   '';
+
+  patches = [ ./pakcs-ghc741.patch ];
 
   preConfigure = ''
     # Path to GHC and SWI Prolog
@@ -41,9 +43,9 @@ stdenv.mkDerivation {
     # The Prolog sources must be built in their final directory.
     (cd $out/curry2prolog/ ; make)
 
-    ensureDir $out/share/emacs/site-lisp/curry-pakcs
+    mkdir -p $out/share/emacs/site-lisp/curry-pakcs
     for e in "$out/tools/emacs/"*.el ; do
-      ln -s $out/tools/emacs/$e $out/share/emacs/site-lisp/curry-pakcs/;
+      ln -s $e $out/share/emacs/site-lisp/curry-pakcs/;
     done
 
     sed -i 's@which@type -P@' $out/bin/.pakcs_wrapper
@@ -58,7 +60,10 @@ stdenv.mkDerivation {
   '';
 
   meta = {
+    homepage = "http://www.informatik.uni-kiel.de/~pakcs/";
     description = "an implementation of the multi-paradigm declarative language Curry";
+    license = stdenv.lib.licenses.bsd3;
+
     longDescription = ''
       PAKCS is an implementation of the multi-paradigm declarative language
       Curry jointly developed by the Portland State University, the Aachen
@@ -71,8 +76,6 @@ stdenv.mkDerivation {
       with dynamic web pages, prototyping embedded systems).
     '';
 
-    homepage = http://www.informatik.uni-kiel.de/~pakcs/;
-    license = stdenv.lib.licenses.bsd3;
     maintainers = [ stdenv.lib.maintainers.kkallio stdenv.lib.maintainers.simons ];
     platforms = stdenv.lib.platforms.linux;
   };

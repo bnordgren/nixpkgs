@@ -1,11 +1,11 @@
 {stdenv, fetchurl, gmp}:
 
-stdenv.mkDerivation rec {
-  name = "mpfr-3.0.0";
+stdenv.mkDerivation (rec {
+  name = "mpfr-3.1.0";
 
   src = fetchurl {
     url = "mirror://gnu/mpfr/${name}.tar.bz2";
-    sha256 = "07w24h8by7n319p2vwwa1xdcg7qzkd1aqm84lfcbfv2kaff5yklg";
+    sha256 = "105nx8qqx5x8f4rlplr2wk4cyv61iw5j3jgi2k21rpb8s6xbp9vl";
   };
 
   buildInputs = [ gmp ];
@@ -36,3 +36,15 @@ stdenv.mkDerivation rec {
     platforms = stdenv.lib.platforms.all;
   };
 }
+
+//
+
+(stdenv.lib.optionalAttrs stdenv.isFreeBSD {
+   /* Work around a FreeBSD bug that otherwise leads to segfaults in
+      the test suite:
+        http://hydra.bordeaux.inria.fr/build/34862
+        http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00015.html
+        http://www.freebsd.org/cgi/query-pr.cgi?pr=161344
+    */
+   configureFlags = [ "--disable-thread-safe" ];
+ }))

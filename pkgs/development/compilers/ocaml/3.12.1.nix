@@ -1,8 +1,8 @@
 { stdenv, fetchurl, ncurses, x11 }:
 
 let
-   useX11 = stdenv.system != "armv5tel-linux";
-   useNativeCompilers = stdenv.system != "armv5tel-linux";
+   useX11 = !stdenv.isArm;
+   useNativeCompilers = !stdenv.isArm;
    inherit (stdenv.lib) optionals optionalString;
 in
 
@@ -20,12 +20,13 @@ stdenv.mkDerivation rec {
   buildFlags = "world" + optionalString useNativeCompilers " bootstrap world.opt";
   buildInputs = [ncurses] ++ optionals useX11 [ x11 ];
   installTargets = "install" + optionalString useNativeCompilers " installopt";
-  patchPhase = ''
+  patches = optionals stdenv.isDarwin [ ./3.12.1-darwin-fix-configure.patch ];
+  preConfigure = ''
     CAT=$(type -tp cat)
     sed -e "s@/bin/cat@$CAT@" -i config/auto-aux/sharpbang
   '';
   postBuild = ''
-    ensureDir $out/include
+    mkdir -p $out/include
     ln -sv $out/lib/ocaml/caml $out/include/caml
   '';
 

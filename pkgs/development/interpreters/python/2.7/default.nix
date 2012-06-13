@@ -1,22 +1,19 @@
 { stdenv, fetchurl, zlib ? null, zlibSupport ? true, bzip2
 , sqlite, tcl, tk, x11, openssl, readline, db4, ncurses, gdbm
-, darwinArchUtility ? null, darwinSwVersUtility ? null
 }:
 
 assert zlibSupport -> zlib != null;
-assert stdenv.isDarwin -> darwinArchUtility != null;
-assert stdenv.isDarwin -> darwinSwVersUtility != null;
 
 with stdenv.lib;
 
 let
 
   majorVersion = "2.7";
-  version = "${majorVersion}.1";
+  version = "${majorVersion}.3";
 
   src = fetchurl {
     url = "http://www.python.org/ftp/python/${version}/Python-${version}.tar.bz2";
-    sha256 = "14i2c7yqa7ljmx2i2bb827n61q33zn23ax96czi8rbkyyny8gqw0";
+    sha256 = "0g3672il41rcfjk7sphfqdsa6qf53y8g3ai8yk1sslxi3khmfr3j";
   };
 
   patches =
@@ -38,9 +35,8 @@ let
 
   buildInputs =
     optional (stdenv ? gcc && stdenv.gcc.libc != null) stdenv.gcc.libc ++
-    [ bzip2 ]
-    ++ optional zlibSupport zlib
-    ++ optionals stdenv.isDarwin [ darwinArchUtility darwinSwVersUtility ];
+    [ bzip2 openssl ]
+    ++ optional zlibSupport zlib;
 
   ensurePurity =
     ''
@@ -89,7 +85,7 @@ let
 
     meta = {
       homepage = "http://python.org";
-      description = "Python -- a high-level dynamically-typed programming language";
+      description = "a high-level dynamically-typed programming language";
       longDescription = ''
         Python is a remarkably powerful dynamic programming language that
         is used in a wide variety of application domains. Some of its key
@@ -99,9 +95,9 @@ let
         hierarchical packages; exception-based error handling; and very
         high level dynamic data types.
       '';
-      license = "GPLv2";
+      license = stdenv.lib.licenses.psfl;
       platforms = stdenv.lib.platforms.all;
-      maintainers = [ stdenv.lib.maintainers.simons ];
+      maintainers = with stdenv.lib.maintainers; [ simons chaoflow ];
     };
   };
 
@@ -172,10 +168,7 @@ let
       deps = [ sqlite ];
     };
 
-    ssl = buildInternalPythonModule {
-      moduleName = "ssl";
-      deps = [ openssl ];
-    };
+    ssl = null;
 
     tkinter = buildInternalPythonModule {
       moduleName = "tkinter";

@@ -4,8 +4,8 @@
 
 cabal.mkDerivation (self: {
   pname = "random-fu";
-  version = "0.2.1.1";
-  sha256 = "034pnmagly3akmmcli018258fnyqlyz79av21dqqklfixvw3yja7";
+  version = "0.2.3.0";
+  sha256 = "17vn1dz4z00xjpsxjx2dfjnz4qhbn5cbkm2s142kdskiphgxi2f8";
   buildDepends = [
     erf gamma monadLoops mtl randomShuffle randomSource rvar syb
     transformers vector
@@ -15,9 +15,6 @@ cabal.mkDerivation (self: {
     description = "Random number generation";
     license = self.stdenv.lib.licenses.publicDomain;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

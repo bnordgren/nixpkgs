@@ -14,7 +14,7 @@ let
     baseName="geoclue";
     version="0.12.0";
     name="${baseName}-${version}";
-    url="http://folks.o-hand.com/jku/geoclue-releases/${name}.tar.gz";
+    url="https://launchpad.net/geoclue/trunk/0.12/+download/${name}.tar.gz";
     hash="15j619kvmdgj2hpma92mkxbzjvgn8147a7500zl3bap9g8bkylqg";
   };
 in
@@ -30,8 +30,12 @@ rec {
   propagatedBuildInputs = [a.dbus a.glib a.dbus_glib];
 
   /* doConfigure should be removed if not needed */
-  phaseNames = ["doConfigure" "doMakeInstall"];
+  phaseNames = ["fixConfigure" "doConfigure" "doMakeInstall"];
       
+  fixConfigure = a.fullDepEntry ''
+    sed -e 's@-Werror@@' -i configure
+  '' ["minInit" "doUnpack"];
+
   meta = {
     description = "Geolocation framework and some data providers";
     maintainers = with a.lib.maintainers;

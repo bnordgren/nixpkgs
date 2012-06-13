@@ -9,11 +9,11 @@ let
 in
 
 stdenv.mkDerivation {
-  name = "hol_light-20120129";
+  name = "hol_light-20120529";
   src = fetchsvn {
     url = http://hol-light.googlecode.com/svn/trunk;
-    rev = "122";
-    sha256 = "d837ba5fe941af9595540691ba4be34e58174ba9a9c7e1ce57620e5cd4385769";
+    rev = "141";
+    sha256 = "a11d7e5db7c6035a2debcf9e73f43c6322389aeac5bc4d123ebf58918052a57f";
   };
 
   buildInputs = [ ocaml findlib camlp5 ];
@@ -27,7 +27,7 @@ stdenv.mkDerivation {
   '';
 
   installPhase = ''
-    ensureDir "$out/lib/hol_light" "$out/bin"
+    mkdir -p "$out/lib/hol_light" "$out/bin"
     cp -a  . $out/lib/hol_light
     echo "${start_script}" > "$out/bin/hol_light"
     chmod a+x "$out/bin/hol_light"

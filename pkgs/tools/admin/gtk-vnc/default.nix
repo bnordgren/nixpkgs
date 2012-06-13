@@ -1,13 +1,13 @@
 x@{builderDefsPackage
   , python, gtk, pygtk, gnutls, cairo, libtool, glib, pkgconfig, libtasn1
   , libffi, cyrus_sasl, intltool, perl, perlPackages, firefox36Pkgs
-  , kbproto, libX11, libXext, xextproto, pygobject
+  , kbproto, libX11, libXext, xextproto, pygobject, libgcrypt
   , ...}:
 builderDefsPackage
 (a :  
 let 
   helperArgNames = ["stdenv" "fetchurl" "builderDefsPackage"] ++ 
-    ["perlPackages" "firefox36Pkgs" "gtkLibs"];
+    ["perlPackages" "firefox36Pkgs"];
 
   buildInputs = (map (n: builtins.getAttr n x)
     (builtins.attrNames (builtins.removeAttrs x helperArgNames)))

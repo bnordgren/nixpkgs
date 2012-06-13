@@ -1,19 +1,19 @@
 { stdenv, fetchurl, lib, patchelf, cdrkit, kernel, which, makeWrapper
 , libX11, libXt, libXext, libXmu, libXcomposite, libXfixes, libXrandr, libXcursor}:
 
-let version = "4.1.0"; in
+let version = "4.1.16"; in
 
 stdenv.mkDerivation {
   name = "VirtualBox-GuestAdditions-${version}";
   src = fetchurl {
     url = "http://download.virtualbox.org/virtualbox/${version}/VBoxGuestAdditions_${version}.iso";
-    sha256 = "0azj08l0457cjl5v2ddgb5kz8gblsi7cgjgdmyiszvlqpyfbh98w";
+    sha256 = "1f2p26cg005xc6vi9dbim0macv60d8k8nq20rk7awrbghfib5imm";
   };
   KERN_DIR = "${kernel}/lib/modules/*/build";
   buildInputs = [ patchelf cdrkit makeWrapper ];
 
   installPhase = ''
-    ensureDir $out
+    mkdir -p $out
     cp -r install/* $out
 
   '';
@@ -78,10 +78,10 @@ stdenv.mkDerivation {
     sed -i -e "s|/usr/bin|$out/bin|" bin/VBoxClient-all
     
     # Install binaries
-    ensureDir $out/sbin
+    mkdir -p $out/sbin
     install -m 755 sbin/VBoxService $out/sbin
 
-    ensureDir $out/bin
+    mkdir -p $out/bin
     install -m 755 bin/VBoxClient $out/bin
     install -m 755 bin/VBoxControl $out/bin
     install -m 755 bin/VBoxClient-all $out/bin
@@ -90,24 +90,21 @@ stdenv.mkDerivation {
             --prefix PATH : "${which}/bin"
 
     # Install OpenGL libraries
-    ensureDir $out/lib
+    mkdir -p $out/lib
     cp -v lib/VBoxOGL*.so $out/lib
-    ensureDir $out/lib/dri
+    mkdir -p $out/lib/dri
     ln -s $out/lib/VBoxOGL.so $out/lib/dri/vboxvideo_dri.so
     
     # Install desktop file
-    ensureDir $out/share/autostart
+    mkdir -p $out/share/autostart
     cp -v share/VBoxGuestAdditions/vboxclient.desktop $out/share/autostart
-    
-    # Install HAL FDI file
-    ensureDir $out/share/hal/fdi/policy
-    install -m 644 share/VBoxGuestAdditions/90-vboxguest.fdi $out/share/hal/fdi/policy
-    
+
     # Install Xorg drivers
-    ensureDir $out/lib/xorg/modules/{drivers,input}
+    mkdir -p $out/lib/xorg/modules/{drivers,input}
     install -m 644 lib/VBoxGuestAdditions/vboxvideo_drv_19.so $out/lib/xorg/modules/drivers/vboxvideo_drv.so
-    install -m 644 lib/VBoxGuestAdditions/vboxmouse_drv_19.so $out/lib/xorg/modules/input/vboxmouse_drv.so
-    
+    # There doesn't appear to be a vboxmouse driver for Xorg 1.9. Was there ever?
+#    install -m 644 lib/VBoxGuestAdditions/vboxmouse_drv_19.so $out/lib/xorg/modules/input/vboxmouse_drv.so
+
     # Install kernel modules
     cd src
     

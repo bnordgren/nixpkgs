@@ -1,11 +1,11 @@
 {stdenv, fetchurl, ocaml, zlib, bzip2, ncurses, file, gd, libpng }:
 
 stdenv.mkDerivation (rec {
-  name = "mldonkey-3.1.0";
+  name = "mldonkey-3.1.1";
   
   src = fetchurl {
     url = "mirror://sourceforge/mldonkey/${name}.tar.bz2";
-    sha256 = "02038nhh6lbb714ariy2xw1vgfycr1w750zplbgwk5pa3cm163zx";
+    sha256 = "1cj0xvfx03jnpifcqxcgfjhkl3f70r86d8zn2flj9wvlnam98qlr";
   };
   
   meta = {
@@ -20,7 +20,7 @@ stdenv.mkDerivation (rec {
   # Byte code compilation (the ocaml opt compiler is not supported in many platforms)
   buildPhase = "make mlnet.byte";
   installPhase = ''
-    ensureDir $out/bin
+    mkdir -p $out/bin
     cp mlnet.byte $out/bin/mlnet
   '';
 

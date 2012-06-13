@@ -1,14 +1,14 @@
-{ stdenv, fetchurl, intltool, wirelesstools, pkgconfig, dbus_glib
+{ stdenv, fetchurl, intltool, wirelesstools, pkgconfig, dbus_glib, xz
 , udev, libnl1, libuuid, polkit, gnutls, ppp, dhcp, dhcpcd, iptables
-, libgcrypt, dnsmasq, avahi }:
+, libgcrypt, dnsmasq, avahi, substituteAll }:
 
 stdenv.mkDerivation rec {
   name = "network-manager-${version}";
-  version = "0.9.0";
+  version = "0.9.2.0";
 
   src = fetchurl {
-    url = "mirror://gnome/sources/NetworkManager/0.9/NetworkManager-${version}.tar.bz2";
-    sha256 = "0kvi767c224zlja65r8gixmhj57292k0gsxa0217lw5i99l2incq";
+    url = "mirror://gnome/sources/NetworkManager/0.9/NetworkManager-${version}.tar.xz";
+    sha256 = "1pvd49ji7mh8ww2rfbvq6hmmjms5mb7w10fr7ihgzqbg589zjyj3";
   };
 
   # Right now we hardcode quite a few paths at build time. Probably we should
@@ -27,37 +27,30 @@ stdenv.mkDerivation rec {
     "--with-dbus-sys-dir=\${out}/etc/dbus-1/system.d"
     "--with-crypto=gnutls" "--disable-more-warnings" ];
 
-  buildInputs = [ wirelesstools udev libnl1 libuuid polkit ppp ];
+  buildInputs = [ wirelesstools udev libnl1 libuuid polkit ppp xz ];
 
   propagatedBuildInputs = [ dbus_glib gnutls libgcrypt ];
 
   buildNativeInputs = [ intltool pkgconfig ];
 
-  patches = [ ./nixos-purity.patch ];
+  patches =
+    [ ( substituteAll {
+        src = ./nixos-purity.patch;
+        inherit avahi dnsmasq ppp;
+        glibc = stdenv.gcc.libc;
+      })
+    ];
 
   preInstall =
     ''
       installFlagsArray=( "sysconfdir=$out/etc" "localstatedir=$out/var" )
     '';
 
-  inherit avahi dnsmasq ppp;
-  glibc = stdenv.gcc.libc;
-
-  # Substitute full paths, check if there any not substituted path
-  postPatch =
-    ''
-      for i in src/backends/NetworkManagerExherbo.c src/dns-manager/nm-dns-dnsmasq.c \
-        src/dnsmasq-manager/nm-dnsmasq-manager.c src/nm-device.c src/ppp-manager/nm-ppp-manager.c; do
-        substituteAll "$i" "$i"
-      done
-      find . -name \*.c | xargs grep '@[a-zA-Z]*@' && exit 1 || true
-    '';
-
   meta = with stdenv.lib; {
     homepage = http://projects.gnome.org/NetworkManager/;
     description = "Network configuration and management in an easy way. Desktop environment independent.";
     license = licenses.gpl2Plus;
-    maintainers = [ maintainers.phreedom ];
+    maintainers = [ maintainers.phreedom maintainers.urkud ];
     platforms = platforms.linux;
   };
 }

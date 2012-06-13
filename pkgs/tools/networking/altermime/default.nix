@@ -26,12 +26,12 @@ rec {
   inherit (sourceInfo) name version;
   inherit buildInputs;
 
-  patches = [./altermime.patch];
+  patches = map a.fetchurl (import ./debian-patches.nix);
 
   phaseNames = ["doPatch" "fixTarget" "doMakeInstall"];
   fixTarget = a.fullDepEntry (''
     sed -i Makefile -e "s@/usr/local@$out@"
-    ensureDir "$out/bin"
+    mkdir -p "$out/bin"
   '') ["doUnpack" "minInit" "defEnsureDir"];
       
   meta = {

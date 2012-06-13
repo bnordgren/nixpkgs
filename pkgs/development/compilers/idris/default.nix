@@ -4,23 +4,19 @@
 
 cabal.mkDerivation (self: {
   pname = "idris";
-  version = "0.9.1";
-  sha256 = "1yvw15750mqrvq1kd7bsk3ldq3s0z947c4f93pv7008gq5im4cvr";
+  version = "0.9.2.1";
+  sha256 = "16jbmyza57066s3wmkvgwn11kqn0nzkjrrvsinh9xd69a79h2iiy";
   isLibrary = false;
   isExecutable = true;
   buildDepends = [
     binary Cabal epic filepath haskeline mtl parsec transformers
   ];
   buildTools = [ happy ];
-  noHaddock = true;
   meta = {
     homepage = "http://www.idris-lang.org/";
     description = "Functional Programming Language with Dependent Types";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

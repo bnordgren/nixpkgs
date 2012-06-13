@@ -3,7 +3,7 @@ source $stdenv/setup
 echo "unpacking $src..."
 tar xvfa $src
 
-ensureDir $out/Adobe/Reader9
+mkdir -p $out/Adobe/Reader9
 
 echo "unpacking reader..."
 set +e
@@ -24,5 +24,14 @@ substituteInPlace $out/Adobe/Reader*/bin/acroread \
     --replace /bin/ls $(type -P ls) \
     --replace xargs "xargs -r"
 
-ensureDir $out/bin
+mkdir -p $out/bin
 ln -s $out/Adobe/Reader*/bin/acroread $out/bin/acroread
+
+mkdir -p $out/share/applications
+mv $out/Adobe/Reader9/Resource/Support/AdobeReader.desktop $out/share/applications/
+sed -i $out/share/applications/AdobeReader.desktop \
+    -e "s|Icon=.*|Icon=$out/Adobe/Reader9/Resource/Icons/128x128/AdobeReader9.png|"
+
+# Not sure if this works.
+mkdir -p $out/share/mimelnk/application
+mv $out/Adobe/Reader9/Resource/Support/vnd*.desktop $out/share/mimelnk/application

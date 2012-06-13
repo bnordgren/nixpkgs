@@ -2,8 +2,8 @@
 
 cabal.mkDerivation (self: {
   pname = "texmath";
-  version = "0.6.0.3";
-  sha256 = "0vj1kh62qs7badv00lcda9m3j53kc069kmrv5lmz62a96y4kx5yi";
+  version = "0.6.0.6";
+  sha256 = "0wxpz9vsgi4lfgjz5w96pn2r2jdflkvb4yd06nxshimxdr51974k";
   isLibrary = true;
   isExecutable = true;
   buildDepends = [ parsec syb xml ];
@@ -12,9 +12,6 @@ cabal.mkDerivation (self: {
     description = "Conversion of LaTeX math formulas to MathML or OMML";
     license = "GPL";
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

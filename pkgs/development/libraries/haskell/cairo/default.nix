@@ -2,8 +2,8 @@
 
 cabal.mkDerivation (self: {
   pname = "cairo";
-  version = "0.12.2";
-  sha256 = "1sa0xfx14y4imq3bd9l0rqrmxls3l9yga249a31zfhcinnr1j9db";
+  version = "0.12.3.1";
+  sha256 = "173pql0n51a9z46vzpwd9q67nblhb61qirynjra9vzydiy79bfwi";
   buildDepends = [ mtl ];
   buildTools = [ gtk2hsBuildtools ];
   extraLibraries = [ cairo libc pkgconfig zlib ];
@@ -13,9 +13,6 @@ cabal.mkDerivation (self: {
     description = "Binding to the Cairo library";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

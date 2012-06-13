@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, unzip, pkgconfig, SDL, gtkLibs, gnome, mesa
+{ stdenv, fetchurl, unzip, pkgconfig, SDL, gtk, GConf, mesa
 , expat, zlib }:
 
 let
@@ -32,11 +32,11 @@ stdenv.mkDerivation {
   makeFlags = "TARGET=mess BUILD_EXPAT= BUILD_ZLIB= NOWERROR=1";
 
   buildInputs =
-    [ unzip pkgconfig SDL gtkLibs.gtk gnome.GConf mesa expat zlib ];
+    [ unzip pkgconfig SDL gtk GConf mesa expat zlib ];
 
   installPhase =
     ''
-      ensureDir $out/bin
+      mkdir -p $out/bin
       cp mess* $out/bin/mess 
     '';
     

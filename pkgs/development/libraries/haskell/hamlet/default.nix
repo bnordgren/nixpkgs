@@ -1,22 +1,19 @@
-{ cabal, blazeBuilder, blazeHtml, failure, parsec, shakespeare
-, text
+{ cabal, blazeBuilder, blazeHtml, blazeMarkup, failure, parsec
+, shakespeare, text
 }:
 
 cabal.mkDerivation (self: {
   pname = "hamlet";
-  version = "0.10.8";
-  sha256 = "1vlp8vwaipz757vnd95gcdi9dkrpbgfdlsb3kgjivsj7rqbmxf7z";
+  version = "1.0.1.3";
+  sha256 = "0pdnq8kvln6jr5gwzd1fj0knd2ph1a76ra1njwaccliqig1s7j3n";
   buildDepends = [
-    blazeBuilder blazeHtml failure parsec shakespeare text
+    blazeBuilder blazeHtml blazeMarkup failure parsec shakespeare text
   ];
   meta = {
-    homepage = "http://www.yesodweb.com/book/templates";
+    homepage = "http://www.yesodweb.com/book/shakespearean-templates";
     description = "Haml-like template files that are compile-time checked";
-    license = self.stdenv.lib.licenses.bsd3;
+    license = self.stdenv.lib.licenses.mit;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

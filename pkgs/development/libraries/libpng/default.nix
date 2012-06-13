@@ -1,22 +1,19 @@
-{ stdenv, fetchurl, zlib, xz }:
+{ stdenv, fetchurl, zlib }:
 
 assert zlib != null;
 
-# If you want to upgrade libpng, look at libpng15 branch
 stdenv.mkDerivation rec {
-  name = "libpng-1.2.47";
-  
+  name = "libpng-1.5.10";
+
   src = fetchurl {
     url = "mirror://sourceforge/libpng/${name}.tar.xz";
-    sha256 = "1lai3dnzw81y40jr17bdj1qh08hwv9mc1v74yybl7jdx2hiilsvx";
+    sha256 = "0pb096zn6iyza28js4j7krvcw23b979igfi315aqmvx622bw6jfx";
   };
-  
+
   propagatedBuildInputs = [ zlib ];
 
-  buildNativeInputs = [ xz ];
-
   passthru = { inherit zlib; };
-  
+
   meta = {
     description = "The official reference implementation for the PNG file format";
     homepage = http://www.libpng.org/pub/png/libpng.html;

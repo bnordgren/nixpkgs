@@ -1,12 +1,12 @@
-{ stdenv, fetchurl, openssl, python, zlib, v8, darwinInstallNameToolUtility }:
+{ stdenv, fetchurl, openssl, python, zlib, v8 }:
 
 stdenv.mkDerivation rec {
-  version = "0.6.10";
+  version = "0.6.18";
   name = "nodejs-${version}";
 
   src = fetchurl {
     url = "http://nodejs.org/dist/v${version}/node-v${version}.tar.gz";
-    sha256 = "1mbbb3dy0hh5qahx7aqaj8cny0wm42d00c1m804r81y6afmn1l6i";
+    sha256 = "6cf4311ecbc1700e88f4382a31b3a7017c1572cd641fd06e653fc1692c2cffff";
   };
 
   configureFlags = [
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     install_name_tool -change libv8.dylib ${v8}/lib/libv8.dylib $out/bin/node
   '';
 
-  buildInputs = [ python openssl v8 zlib ] ++ stdenv.lib.optional stdenv.isDarwin darwinInstallNameToolUtility;
+  buildInputs = [ python openssl v8 zlib ];
 
   meta = with stdenv.lib; {
     description = "Event-driven I/O framework for the V8 JavaScript engine";

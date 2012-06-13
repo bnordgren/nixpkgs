@@ -14,10 +14,11 @@ rec {
     sqlite icu gperf bison flex autoconf automake libtool 
     perl intltool pkgconfig libsoup gtkdoc libXt libproxy
     enchant python ruby which renderproto libXrender geoclue
+    kbproto
     ];
 
   propagatedBuildInputs = [
-    gstreamer gstPluginsBase gstFfmpeg gstPluginsGood
+    gstreamer gst_plugins_base gst_ffmpeg gst_plugins_good
     ];
 
   configureFlags = [
@@ -25,22 +26,20 @@ rec {
     "--enable-web-sockets"
     "--enable-web-timing"
     
-    # https://bugs.webkit.org/show_bug.cgi?id=55294
-    # "--enable-image-resizer"
-
     "--enable-geolocation"
 
     # Not implemented?
-    # "--enable-web-audio"
+    #"--enable-web-audio"
 
     "--enable-mathml"
 
     #"--enable-wml"
     
     # https://bugs.webkit.org/show_bug.cgi?id=45110
-    # "--enable-indexed-database"
+    #"--enable-indexed-database"
 
-    "--enable-xhtmlmp"
+    # Doesn't work in release...
+    #"--enable-xhtmlmp"
 
     # "--enable-input-speech"
 
@@ -48,10 +47,10 @@ rec {
     "--enable-blob"
 
     # https://bugs.webkit.org/show_bug.cgi?id=59430
-    # "--enable-directory-upload"
+    #"--enable-directory-upload"
 
     # https://bugs.webkit.org/show_bug.cgi?id=58443
-    # "--enable-file-system"
+    #"--enable-file-system"
     ];
 
   /* doConfigure should be specified separately */
@@ -69,7 +68,7 @@ rec {
   '') ["minInit" "doUnpack"];
 
   doAddPrograms = fullDepEntry (''
-    ensureDir $out/bin
+    mkdir -p $out/bin
     for i in Programs/.libs/* Programs/*; do 
         cp $i $out/bin/webkit-program-$(basename $i) || true
     done
@@ -85,6 +84,6 @@ rec {
     maintainers = [stdenv.lib.maintainers.raskin];
   };
   passthru = {
-    inherit gstreamer gstPluginsBase gstPluginsGood gstFfmpeg;
+    inherit gstreamer gst_plugins_base gst_plugins_good gst_ffmpeg;
   };
 }

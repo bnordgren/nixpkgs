@@ -4,8 +4,9 @@ stdenv.mkDerivation rec {
   name = "ilbc-rfc3951";
 
   script = fetchurl {
-    url = http://ilbcfreeware.org/documentation/extract-cfile.awk;
-    sha256 = "155izy7p7azak1h6bgafvh84b1605zyw14k2s4pyl5nd4saap5c6";
+    url = http://ilbcfreeware.org/documentation/extract-cfile.txt;
+    name = "extract-cfile.awk";
+    sha256 = "0md76qlszaras9grrxaq7xfxn1yikmz4qqgnjj6y50jg31yr5wyd";
   };
 
   rfc3951 = fetchurl {
@@ -13,14 +14,13 @@ stdenv.mkDerivation rec {
     sha256 = "0zf4mvi3jzx6zjrfl2rbhl2m68pzbzpf1vbdmn7dqbfpcb67jpdy";
   };
 
-  cmakeLists = ./CMakeLists.txt;
   buildNativeInputs = [ cmake ];
 
   unpackPhase = ''
     mkdir -v ${name}
     cd ${name}
     ${gawk}/bin/gawk -f ${script} ${rfc3951}
-    cp -v ${cmakeLists} CMakeLists.txt
+    cp -v ${./CMakeLists.txt} CMakeLists.txt
     '';
 
 }

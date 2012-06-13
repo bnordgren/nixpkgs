@@ -7,8 +7,8 @@
 
 cabal.mkDerivation (self: {
   pname = "snap-server";
-  version = "0.7.0.1";
-  sha256 = "149jgd9mcndw9sc051020y7yiai1fipjnqk4s3sbw4lmaysap673";
+  version = "0.8.1.1";
+  sha256 = "0k47z9fhc64bnv86ixaxvndwc7hk28ny3mf5ny9d5jmp77a3ws46";
   buildDepends = [
     attoparsec attoparsecEnumerator binary blazeBuilder
     blazeBuilderEnumerator bytestringNums caseInsensitive directoryTree
@@ -21,9 +21,6 @@ cabal.mkDerivation (self: {
     description = "A fast, iteratee-based, epoll-enabled web server for the Snap Framework";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

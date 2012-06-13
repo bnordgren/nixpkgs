@@ -1,32 +1,34 @@
-{ cabal, attoparsec, attoparsecEnumerator, ghcPaths, hlint, regexPosix, emacsPackages }:
+{ cabal, Cabal, emacs, filepath, ghcPaths, ghcSybUtils, hlint
+, ioChoice, regexPosix, syb, transformers
+}:
 
 cabal.mkDerivation (self: {
   pname = "ghc-mod";
-  version = "1.10.5";
-  sha256 = "0hbimrrlasa2rkmdz9d4fcyk70fynmwx0zqyl470hrwz8d8v73rc";
-  buildDepends = [
-    attoparsec attoparsecEnumerator ghcPaths hlint regexPosix
-  ];
-  propagatedBuildInputs = [emacsPackages.emacs emacsPackages.haskellMode];
+  version = "1.10.18";
+  sha256 = "1kpy0mjxag3xs8zs5kbl1arkd3341g1xr52qvzryks2ivax1zi9s";
+  isLibrary = false;
   isExecutable = true;
+  buildDepends = [
+    Cabal filepath ghcPaths ghcSybUtils hlint ioChoice regexPosix syb
+    transformers
+  ];
+  buildTools = [ emacs ];
   postInstall = ''
-    cd $out/share/$pname-$version
-    make
-    rm Makefile
-    cd ..
-    ensureDir "$out/share/emacs"
-    mv $pname-$version emacs/site-lisp
-  '';
-
+      cd $out/share/$pname-$version
+      make
+      rm Makefile
+      cd ..
+      ensureDir "$out/share/emacs"
+      mv $pname-$version emacs/site-lisp
+    '';
   meta = {
     homepage = "http://www.mew.org/~kazu/proj/ghc-mod/";
-    description = "Happy Haskell programming on Emacs";
+    description = "Happy Haskell programming on Emacs/Vim";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
     maintainers = [
       self.stdenv.lib.maintainers.andres
       self.stdenv.lib.maintainers.bluescreen303
-      self.stdenv.lib.maintainers.simons
     ];
   };
 })

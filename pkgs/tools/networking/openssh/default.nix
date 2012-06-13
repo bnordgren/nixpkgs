@@ -13,11 +13,11 @@ let
 in
 
 stdenv.mkDerivation rec {
-  name = "openssh-5.9p1";
+  name = "openssh-6.0p1";
 
   src = fetchurl {
     url = "ftp://ftp.nl.uu.net/pub/OpenBSD/OpenSSH/portable/${name}.tar.gz";
-    sha256 = "1mbpfyq3kjc4p8pc631iqgvcqhwhm6vdwvzsdmd54jzhdxmqngld";
+    sha1 = "f691e53ef83417031a2854b8b1b661c9c08e4422";
   };
 
   prePatch = stdenv.lib.optionalString hpnSupport
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
   preConfigure =
     ''
       configureFlags="$configureFlags --with-privsep-path=$out/empty"
-      ensureDir $out/empty
+      mkdir -p $out/empty
     '';
 
   postInstall =
@@ -55,7 +55,7 @@ stdenv.mkDerivation rec {
       chmod +x $out/bin/ssh-copy-id
       cp contrib/ssh-copy-id.1 $out/share/man/man1/
 
-      ensureDir $out/etc/ssh
+      mkdir -p $out/etc/ssh
       cp moduli $out/etc/ssh/
     '';
 

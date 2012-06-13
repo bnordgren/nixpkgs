@@ -17,7 +17,7 @@ rec {
     ];
 
   propagatedBuildInputs = [
-    gstreamer gstPluginsBase gstFfmpeg gstPluginsGood
+    gstreamer gst_plugins_base gst_ffmpeg gst_plugins_good
     ];
 
   configureCommand = "./autogen.sh ";
@@ -70,7 +70,7 @@ rec {
   '') ["minInit" "doUnpack"];
 
   doAddPrograms = fullDepEntry (''
-    ensureDir $out/bin
+    mkdir -p $out/bin
     for i in Programs/.libs/* Programs/*; do 
         cp $i $out/bin/webkit-program-$(basename $i) || true
     done
@@ -86,6 +86,6 @@ rec {
     maintainers = [stdenv.lib.maintainers.raskin];
   };
   passthru = {
-    inherit gstreamer gstPluginsBase gstPluginsGood gstFfmpeg;
+    inherit gstreamer gst_plugins_base gst_plugins_good gst_ffmpeg;
   };
 }

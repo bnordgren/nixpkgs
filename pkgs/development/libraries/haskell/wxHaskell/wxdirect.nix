@@ -2,8 +2,8 @@
 
 cabal.mkDerivation (self: {
   pname = "wxdirect";
-  version = "0.13.1.2";
-  sha256 = "1gn5si6939yizlkf7hzm2a2gff5sa98m7q5q1hz23av98zfa8pv7";
+  version = "0.90.0.1";
+  sha256 = "04jslgxw601g6wh8f2wrdnipzh6x0487kfxb89fkgfgjhxrkfyr3";
   isLibrary = true;
   isExecutable = true;
   buildDepends = [ parsec strict time ];
@@ -12,9 +12,6 @@ cabal.mkDerivation (self: {
     description = "helper tool for building wxHaskell";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

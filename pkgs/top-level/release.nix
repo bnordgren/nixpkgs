@@ -36,11 +36,10 @@ with (import ./release-lib.nix);
   bind = linux;
   bison23 = all;
   bison24 = all;
+  bison25 = all;
   bitlbee = linux;
   bittorrent = linux;
   blender = linux;
-  boost = all;
-  boostFull = all;
   bsdiff = all;
   btrfsProgs = linux;
   bvi = all;
@@ -95,7 +94,7 @@ with (import ./release-lib.nix);
   fuse = linux;
   gajim = linux;
   gawk = all;
-  gcc = all;
+  gcc = linux;
   gcc33 = linux;
   gcc34 = linux;
   gcc41 = linux;
@@ -123,6 +122,7 @@ with (import ./release-lib.nix);
   gnused = all;
   gnutar = all;
   gnutls = linux;
+  gogoclient = linux;
   gphoto2 = linux;
   gpm = linux;
   gprolog = linux;
@@ -136,12 +136,10 @@ with (import ./release-lib.nix);
   gsl = linux;
   guile = linux;  # tests fail on Cygwin
   gv = linux;
-  gw6c = linux;
   gzip = all;
   hal = linux;
   hal_info = linux;
   hddtemp = linux;
-  hdparm = linux;
   hello = all;
   host = linux;
   htmlTidy = all;
@@ -185,11 +183,12 @@ with (import ./release-lib.nix);
   man = linux;
   manpages = linux;
   maxima = linux;
-  mc = all;
+  mc = linux;
   mcabber = linux;
   mcron = linux;
   mdadm = linux;
   mercurial = allBut "i686-cygwin";
+  mercurialFull = allBut "i686-cygwin";
   mesa = mesaPlatforms;
   midori = linux;
   mingetty = linux;
@@ -211,7 +210,6 @@ with (import ./release-lib.nix);
   nfsUtils = linux;
   nix = all;
   nixUnstable = all;
-  nixSqlite = all;
   nmap = linux;
   nss_ldap = linux;
   nssmdns = linux;
@@ -242,12 +240,12 @@ with (import ./release-lib.nix);
   ppl = all;
   procps = linux;
   pwdutils = linux;
-  pthreadmanpages = all;
+  pthreadmanpages = linux;
   pygtk = linux;
   pyqt4 = linux;
   python = allBut "i686-cygwin";
   pythonFull = linux;
-  sbcl = all;
+  sbcl = linux;
   qt3 = linux;
   quake3demo = linux;
   readline = all;
@@ -258,7 +256,7 @@ with (import ./release-lib.nix);
   rsync = linux;
   rubber = allBut "i686-cygwin";
   ruby = all;
-  rxvt_unicode = all;
+  rxvt_unicode = linux;
   samba = linux;
   screen = linux ++ darwin;
   scrot = linux;
@@ -268,7 +266,7 @@ with (import ./release-lib.nix);
   sharutils = all;
   slim = linux;
   sloccount = allBut "i686-cygwin";
-  smartmontools = all;
+  smartmontools = linux;
   socat = linux;
   spidermonkey = linux;
   splashutils = linux;
@@ -362,8 +360,8 @@ with (import ./release-lib.nix);
   };
 
   firefox36Pkgs.firefox = linux;
-  firefox90Pkgs.firefox = linux;
-  firefox100Pkgs.firefox = linux;
+  firefox12Pkgs.firefox = linux;
+  firefox13Pkgs.firefox = linux;
 
   gnome = {
     gnome_panel = linux;
@@ -409,78 +407,12 @@ with (import ./release-lib.nix);
   };
   */
 
-  linuxPackages_2_6_25 = {
-    kernel = linux;
-  };
-
-  linuxPackages_2_6_27 = {
-    kernel = linux;
-    virtualbox = linux;
-    virtualboxGuestAdditions = linux;
-  };
-
-  linuxPackages_2_6_28 = {
-    kernel = linux;
-  };
-
-  linuxPackages_2_6_29 = {
-    kernel = linux;
-  };
-
-  linuxPackages_2_6_31 = {
-    kernel = linux;
-  };
-
-  linuxPackages_2_6_32 = {
-    kernel = linux;
-    virtualbox = linux;
-    virtualboxGuestAdditions = linux;
-  };
-
-  linuxPackages_2_6_35 = {
-    kernel = linux;
-    virtualbox = linux;
-    virtualboxGuestAdditions = linux;
-  };
-
-  linuxPackages_2_6_36 = {
-    kernel = linux;
-    virtualbox = linux;
-    virtualboxGuestAdditions = linux;
-  };
-
-  linuxPackages_2_6_37 = {
-    kernel = linux;
-    virtualbox = linux;
-    virtualboxGuestAdditions = linux;
-  };
-
-  linuxPackages_2_6_38 = {
-    kernel = linux;
-    virtualbox = linux;
-    virtualboxGuestAdditions = linux;
-  };
-
   strategoPackages = {
-    sdf = all;
-    strategoxt = all;
-    javafront = all;
+    sdf = linux;
+    strategoxt = linux;
+    javafront = linux;
     strategoShell = linux ++ darwin;
     dryad = linux;
-  };
-
-  strategoPackages018 = {
-    sdfStatic = all;
-    sdf = all;
-    strategoxt = all;
-    javafront = all;
-    aspectjfront = all;
-    strategoShell = all;
-    dryad = linux;
-  };
-
-  perlPackages = {
-    TaskCatalystTutorial = linux;
   };
 
   pythonPackages = {

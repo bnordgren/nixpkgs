@@ -1,7 +1,7 @@
 { callPackage, callPackageOrig, stdenv, qt48 }:
 
 let
-  release = "4.8.0";
+  release = "4.8.4";
 
   # Need callPackageOrig to avoid infinite cycle
   kde = callPackageOrig ./kde-package {
@@ -10,13 +10,14 @@ let
 
   # The list of igored individual modules
   ignoreList = {
+    # Doesn't work yet
+    kdeutils = [ "ksecrets" ];
     # kdeadmin/strigi-analyzer has no real code
     kdeadmin = [ "strigi-analyzer" ];
     # kdesdk/kioslave is splitted into kioslave-svn and kioslave-git
     kdesdk = [ "kioslave" ];
     # Most of kdebindings do not compile due to a bug in the buildsystem
-    kdebindings = [ "kimono" "korundum" "kross-interpreters" "perlkde" "perlqt"
-      "qtruby" "qyoto" "smokekde" ];
+    kdebindings = [ "kimono" "korundum" "kross-interpreters" "perlkde" "qyoto" ];
   };
 
   # Extra subpackages in the manifest format

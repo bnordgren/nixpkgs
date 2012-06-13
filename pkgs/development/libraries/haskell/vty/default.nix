@@ -4,8 +4,8 @@
 
 cabal.mkDerivation (self: {
   pname = "vty";
-  version = "4.7.0.10";
-  sha256 = "03cvr4z0fvxfyrikgf89777cp1xqhy22yj83p0dysp0i5ds6cd9v";
+  version = "4.7.0.14";
+  sha256 = "0wgn2jbr7lih9znkpa09nvb4qjd0801c0r4mwwrw4pd9n9mkjqn9";
   buildDepends = [
     deepseq mtl parallel parsec terminfo utf8String vector
   ];
@@ -14,9 +14,6 @@ cabal.mkDerivation (self: {
     description = "A simple terminal access library";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

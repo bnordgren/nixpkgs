@@ -1,11 +1,13 @@
 { stdenv, fetchurl, pkgconfig, dbus, libnih }:
 
+let version = "1.5"; in
+
 stdenv.mkDerivation rec {
-  name = "upstart-1.3";
+  name = "upstart-${version}";
   
   src = fetchurl {
-    url = "http://upstart.ubuntu.com/download/1.3/${name}.tar.gz";
-    md5 = "7820797b64878c27115fff6a7398a6a9";
+    url = "http://upstart.ubuntu.com/download/${version}/${name}.tar.gz";
+    md5 = "870920a75f8c13f3a3af4c35916805ac";
   };
 
   buildInputs = [ pkgconfig dbus libnih ];
@@ -29,7 +31,7 @@ stdenv.mkDerivation rec {
   postInstall =
     ''
       t=$out/etc/bash_completion.d
-      ensureDir $t
+      mkdir -p $t
       cp ${./upstart-bash-completion} $t/upstart
     '';
 

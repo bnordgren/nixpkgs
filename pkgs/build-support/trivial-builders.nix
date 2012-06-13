@@ -18,7 +18,11 @@ rec {
     , executable ? false # run chmod +x ?
     , destination ? ""   # relative path appended to $out eg "/bin/foo"
     }:
-    runCommand name {inherit text executable; }
+    runCommand name
+      { inherit text executable;
+        # Pointless to do this on a remote machine.
+        preferLocalBuild = true;
+      }
       ''
         n=$out${destination}
         mkdir -p "$(dirname "$n")"
@@ -48,7 +52,7 @@ rec {
   makeSetupHook = { deps ? [], substitutions ? {} }: script:
     runCommand "hook" substitutions
       (''
-        ensureDir $out/nix-support
+        mkdir -p $out/nix-support
         cp ${script} $out/nix-support/setup-hook
       '' + stdenv.lib.optionalString (deps != []) ''
         echo ${toString deps} > $out/nix-support/propagated-build-native-inputs
@@ -112,7 +116,7 @@ _EOF_
   # the default binary.
   useSetUID = drv: path:
     let
-      name = stdenv.lib.basename path;
+      name = baseNameOf path;
       bin = "${drv}${path}";
     in assert name != "";
       writeScript "setUID-${name}" ''

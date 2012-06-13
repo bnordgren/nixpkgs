@@ -7,14 +7,14 @@ cabal.mkDerivation (self: {
   isLibrary = true;
   isExecutable = true;
   buildDepends = [ binary mtl ];
+  patchPhase = ''
+    sed -i -e 's|mtl *>=.*$|mtl,|' ghc-events.cabal
+  '';
   noHaddock = true;
   meta = {
     description = "Library and tool for parsing .eventlog files from GHC";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

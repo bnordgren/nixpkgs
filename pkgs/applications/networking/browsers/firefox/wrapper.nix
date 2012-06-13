@@ -7,12 +7,12 @@ stdenv.mkDerivation {
 
   desktopItem = makeDesktopItem {
     name = browserName;
-    exec = browserName;
+    exec = browserName + " %U";
     icon = icon;
     comment = "";
     desktopName = desktopName;
     genericName = "Web Browser";
-    categories = "Application;Network;";
+    categories = "Application;Network;WebBrowser;";
   };
 
   buildInputs = [makeWrapper];
@@ -28,10 +28,15 @@ stdenv.mkDerivation {
         "$out/bin/${browserName}${nameSuffix}" \
         --suffix-each MOZ_PLUGIN_PATH ':' "$plugins" \
         --suffix-each LD_LIBRARY_PATH ':' "$libs" \
+        --suffix-each LD_PRELOAD ':' "$(cat $(filterExisting $(addSuffix /extra-ld-preload $plugins)))" \
         --prefix-contents PATH ':' "$(filterExisting $(addSuffix /extra-bin-path $plugins))"
 
-    ensureDir $out/share/applications
+    mkdir -p $out/share/applications
     cp $desktopItem/share/applications/* $out/share/applications
+
+    # For manpages, in case the program supplies them
+    mkdir -p $out/nix-support
+    echo ${browser} > $out/nix-support/propagated-user-env-packages
   '';
 
   # Let each plugin tell us (through its `mozillaPlugin') attribute

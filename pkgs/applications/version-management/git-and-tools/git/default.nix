@@ -8,15 +8,19 @@
 }:
 
 let
-  version = "1.7.9.2";
+
+  version = "1.7.10.4";
+  
   svn = subversionClient.override { perlBindings = true; };
+  
 in
+
 stdenv.mkDerivation {
   name = "git-${version}";
 
   src = fetchurl {
     url = "http://git-core.googlecode.com/files/git-${version}.tar.gz";
-    sha256 = "bd7725fb80f305bf27666e3d26a9b7b79596e2248f2ae2d27e06bc15a501ac75";
+    sha256 = "1pd8vd9bgvai3n7xw7b11i7gznjma2pb97d29k304wk89mj57kkp";
   };
 
   patches = [ ./docbook2texi.patch ];
@@ -42,11 +46,11 @@ stdenv.mkDerivation {
       }
 
       # Install contrib stuff.
-      ensureDir $out/share/git
+      mkdir -p $out/share/git
       mv contrib $out/share/git/
-      ensureDir $out/share/emacs/site-lisp
+      mkdir -p $out/share/emacs/site-lisp
       ln -s "$out/share/git/contrib/emacs/"*.el $out/share/emacs/site-lisp/
-      ensureDir $out/etc/bash_completion.d
+      mkdir -p $out/etc/bash_completion.d
       ln -s $out/share/git/contrib/completion/git-completion.bash $out/etc/bash_completion.d/
 
       # grep is a runtime dependence, need to patch so that it's found

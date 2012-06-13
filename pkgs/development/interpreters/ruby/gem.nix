@@ -31,7 +31,8 @@ let
         wrapProgram "$prog" \
           --prefix GEM_PATH : "$GEM_PATH" \
           --prefix RUBYLIB : "${rubygems}/lib" \
-          --set RUBYOPT 'rubygems'
+          --set RUBYOPT rubygems \
+          $extraWrapperFlags ''${extraWrapperFlagsArray[@]}
       done
 
       for prog in $out/gems/*/bin/*; do
@@ -42,12 +43,6 @@ let
     '';
 
     propagatedUserEnvPkgs = requiredGems;
-    postFixup = ''
-      if [ -n "$propagatedUserEnvPkgs" ]; then
-          mkdir -p "$out/nix-support"
-          echo "$propagatedUserEnvPkgs" > "$out/nix-support/propagated-user-env-packages"
-      fi
-    '';
 
   };
   mb = stdenv.lib.maybeAttr;

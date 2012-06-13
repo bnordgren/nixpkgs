@@ -5,14 +5,14 @@ assert readline != null;
 let
   system = stdenv.system;
   arch = if system == "i686-linux" then "ia32" else if system == "x86_64-linux" || system == "x86_64-darwin" then "x64" else "";
-  version = "3.6.6.20";
+  version = "3.6.6.25";
 in
 assert arch != "";
 stdenv.mkDerivation rec {
     name = "v8-${version}";
     src = fetchsvn {
       url = "http://v8.googlecode.com/svn/tags/${version}";
-      sha256 = "68565086baa5a37a0fa15e1c0b7914210fa590b29a8196014cd83789da6a01ba";
+      sha256 = "2a097cbea29a8488419840245bf7bf85513941ceb22c5ef0a3825bfe5edaa045";
     };
 
     buildInputs = [python scons readline makeWrapper];
@@ -25,8 +25,8 @@ stdenv.mkDerivation rec {
     '';
 
     installPhase = ''
-      ensureDir $out/bin
-      ensureDir $out/lib
+      mkdir -p $out/bin
+      mkdir -p $out/lib
 
       cp -v libv8.* $out/lib
       cp -v d8 $out/bin/d8

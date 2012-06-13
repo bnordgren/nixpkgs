@@ -23,6 +23,13 @@ rec {
     ];
   };
 
+  # support for bugzilla
+  gitBz = import ./git-bz {
+    inherit fetchgit stdenv makeWrapper python asciidoc xmlto # docbook2x docbook_xsl docbook_xml_dtd_45 libxslt
+      ;
+    inherit (pythonPackages) pysqlite;
+  };
+
   # Git with SVN support, but without GUI.
   gitSVN = lowPrio (appendToName "with-svn" (git.override {
     svnSupport = true;
@@ -35,21 +42,11 @@ rec {
     sendEmailSupport = stdenv.isDarwin == false;
   });
 
-  gitGit = import ./git/git-git.nix {
-    inherit fetchurl sourceFromHead stdenv curl openssl zlib expat perl gettext
-      asciidoc texinfo xmlto docbook2x
-      docbook_xsl docbook_xml_dtd_45 libxslt
-      cpio tcl tk makeWrapper subversion autoconf;
-    svnSupport = false;
-    guiSupport = false;
-    perlLibs = [perlPackages.LWP perlPackages.URI perlPackages.TermReadKey subversion];
-  };
-
   gitAnnex = lib.makeOverridable (import ./git-annex) {
-    inherit stdenv fetchurl libuuid rsync findutils curl perl git ikiwiki which coreutils;
-    inherit (haskellPackages) ghc MissingH utf8String pcreLight SHA dataenc
-      HTTP testpack hS3 mtl network hslogger hxt json liftedBase monadControl;
-    QuickCheck2 = haskellPackages.QuickCheck_2_4_0_1;
+    inherit stdenv fetchurl libuuid rsync findutils curl perl git ikiwiki which coreutils openssh;
+    inherit (haskellPackages_ghc741) ghc MissingH utf8String pcreLight SHA dataenc
+      HTTP testpack hS3 mtl network hslogger hxt json liftedBase monadControl IfElse
+      QuickCheck2 bloomfilter editDistance;
   };
 
   qgit = import ./qgit {
@@ -63,7 +60,6 @@ rec {
     inherit (xlibs) libXext libX11;
     qt = qt4;
   };
-
 
   stgit = import ./stgit {
     inherit fetchurl stdenv python git;
@@ -103,6 +99,8 @@ rec {
     inherit stdenv fetchgit ruby makeWrapper;
     git = gitSVN;
   };
+
+  svn2git_kde = callPackage ./svn2git-kde { };
 
   gitSubtree = import ./git-subtree {
     inherit stdenv fetchurl git asciidoc xmlto docbook_xsl docbook_xml_dtd_45 libxslt;

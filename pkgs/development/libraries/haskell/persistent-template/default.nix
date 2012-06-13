@@ -2,17 +2,14 @@
 
 cabal.mkDerivation (self: {
   pname = "persistent-template";
-  version = "0.8.1.1";
-  sha256 = "1wl669h8az9wviaq04pwg7w3g5cc90hafn2f1p3jybbif0hpqhks";
+  version = "0.9.0.2";
+  sha256 = "1x3xn5dxv41hbadb0riss046lcr3k0h4rg6cvk60x8zxblrswabw";
   buildDepends = [ aeson monadControl persistent text transformers ];
   meta = {
     homepage = "http://www.yesodweb.com/book/persistent";
     description = "Type-safe, non-relational, multi-backend persistence";
-    license = self.stdenv.lib.licenses.bsd3;
+    license = self.stdenv.lib.licenses.mit;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

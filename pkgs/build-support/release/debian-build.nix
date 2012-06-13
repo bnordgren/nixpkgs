@@ -30,7 +30,7 @@ vmTools.runInLinuxImage (stdenv.mkDerivation (
 
     # !!! cut&paste from rpm-build.nix
     postHook = ''
-      ensureDir $out/nix-support
+      mkdir -p $out/nix-support
       cat "$diskImage"/nix-support/full-name > $out/nix-support/full-name
 
       # If `src' is the result of a call to `makeSourceTarball', then it
@@ -65,9 +65,10 @@ vmTools.runInLinuxImage (stdenv.mkDerivation (
         --fstrans=${if fsTranslation then "yes" else "no"} \
         --requires="${concatStringsSep "," debRequires}" \
         --provides="${concatStringsSep "," debProvides}" \
+        ${optionalString (src ? version) "--pkgversion=$(echo ${src.version} | tr _ -)"} \
         make install
 
-      ensureDir $out/debs
+      mkdir -p $out/debs
       find . -name "*.deb" -exec cp {} $out/debs \;
 
       [ "$(echo $out/debs/*.deb)" != "" ]

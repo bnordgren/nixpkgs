@@ -1,20 +1,21 @@
 { stdenv, fetchurl, makeWrapper, boost, file, gettext
-, glib, glibc, gnome_keyring, gtk, gtkmm, intltool, libctemplate, libglade
+, glib, glibc, libgnome_keyring, gnome_keyring, gtk, gtkmm, intltool
+, libctemplate, libglade
 , libgnome, libsigcxx, libtool, libuuid, libxml2, libzip, lua, mesa, mysql
 , pango, paramiko, pcre, pexpect, pkgconfig, pycrypto, python, sqlite
 }:
 
 stdenv.mkDerivation rec {
   pname = "mysql-workbench";
-  version = "5.2.34";
+  version = "5.2.39";
   name = "${pname}-${version}";
 
   src = fetchurl {
     url = "http://mirror.services.wisc.edu/mysql/Downloads/MySQLGUITools/mysql-workbench-gpl-${version}-src.tar.gz";
-    sha256 = "1b5ijaccy2k7if4pld8ihz1wa1wr1f9gj2m5xa4kf7v05zcx93c6";
+    sha256 = "0e4e14f1b39dca2b65f924381d82b406dc25a530fbd25631b4cd05bddc4ab5bd";
   };
 
-  buildInputs = [ boost file gettext glib glibc gnome_keyring gtk gtkmm intltool
+  buildInputs = [ boost file gettext glib glibc libgnome_keyring gtk gtkmm intltool
     libctemplate libglade libgnome libsigcxx libtool libuuid libxml2 libzip lua makeWrapper mesa
     mysql paramiko pcre pexpect pkgconfig pycrypto python sqlite ];
 
@@ -71,6 +72,6 @@ exec 19> $FIFOCTL
     homepage = http://wb.mysql.com/;
     license = licenses.gpl2;
     maintainers = [ maintainers.kkallio ];
-    platforms = platforms.linux;
+    platforms = [ "x86_64-linux" ];
   };
 }

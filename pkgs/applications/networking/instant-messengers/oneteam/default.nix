@@ -1,16 +1,16 @@
 x@{builderDefsPackage
   , fetchgit, perl, xulrunner, cmake, perlPackages, zip, unzip, pkgconfig
-  , pulseaudio, gtkLibs, pixman, nspr, nss, libXScrnSaver, scrnsaverproto
+  , pulseaudio, glib, gtk, pixman, nspr, nss, libXScrnSaver, scrnsaverproto
   , ...}:
 builderDefsPackage
 (a :  
 let 
   helperArgNames = ["stdenv" "fetchurl" "builderDefsPackage"] ++ 
-    ["fetchgit" "perlPackages" "gtkLibs"];
+    ["fetchgit" "perlPackages"];
 
   buildInputs = map (n: builtins.getAttr n x)
     (builtins.attrNames (builtins.removeAttrs x helperArgNames)) ++ [
-      a.perlPackages.SubName a.gtkLibs.gtk a.gtkLibs.glib
+      a.perlPackages.SubName a.gtk a.glib
     ];
   sourceInfo = rec {
     baseName="oneteam";
@@ -59,14 +59,14 @@ rec {
   doDeploy = a.fullDepEntry ''
     TARGET_DIR="$out/share/oneteam/app"
     BUILD_DIR="$PWD"
-    ensureDir "$TARGET_DIR"
+    mkdir -p "$TARGET_DIR"
     cd "$TARGET_DIR"
     unzip "$BUILD_DIR/oneteam.xulapp"
-    ensureDir "$out/bin"
+    mkdir -p "$out/bin"
     echo "#! ${a.stdenv.shell}" > "$out/bin/oneteam"
     echo "\"${xulrunner}/bin/xulrunner\" \"$TARGET_DIR/application.ini\"" > "$out/bin/oneteam"
     chmod a+x "$out/bin/oneteam"
-    ensureDir "$out/share/doc"
+    mkdir -p "$out/share/doc"
     cp -r "$BUILD_DIR/docs" "$out/share/doc/oneteam"
   '' ["defEnsureDir"];
 

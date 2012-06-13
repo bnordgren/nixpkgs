@@ -78,6 +78,17 @@ rec {
   catAttrs = attr: l: fold (s: l: if hasAttr attr s then [(getAttr attr s)] ++ l else l) [] l;
 
 
+  /* Filter an attribute set by removing all attributes for which the
+     given predicate return false.
+
+     Example:
+       filterAttrs (n: v: n == "foo") { foo = 1; bar = 2; }
+       => { foo = 1; }
+  */
+  filterAttrs = pred: set:
+    listToAttrs (fold (n: ys: let v = getAttr n set; in if pred n v then [(nameValuePair n v)] ++ ys else ys) [] (attrNames set));
+
+
   /* Recursively collect sets that verify a given predicate named `pred'
      from the set `attrs'.  The recursion is stopped when the predicate is
      verified.
@@ -115,12 +126,25 @@ rec {
 
      Example:
        mapAttrs (name: value: name + "-" + value)
-          {x = "foo"; y = "bar";}
-       => {x = "x-foo"; y = "y-bar";}
+          { x = "foo"; y = "bar"; }
+       => { x = "x-foo"; y = "y-bar"; }
   */
   mapAttrs = f: set:
     listToAttrs (map (attr: nameValuePair attr (f attr (getAttr attr set))) (attrNames set));
-    
+
+
+  /* Like `mapAttrs', but allows the name of each attribute to be
+     changed in addition to the value.  The applied function should
+     return both the new name and value as a `nameValuePair'.
+     
+     Example:
+       mapAttrs' (name: value: nameValuePair ("foo_" + name) ("bar-" + value))
+          { x = "a"; y = "b"; }
+       => { foo_x = "bar-a"; foo_y = "bar-b"; }
+  */
+  mapAttrs' = f: set:
+    listToAttrs (map (attr: f attr (getAttr attr set)) (attrNames set));
+        
 
   /* Like `mapAttrs', except that it recursively applies itself to
      attribute sets.  Also, the first argument of the argument

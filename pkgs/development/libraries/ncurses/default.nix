@@ -11,15 +11,11 @@ let
   cxx = stdenv.system != "i686-solaris";
 in
 stdenv.mkDerivation (rec {
-  name = "ncurses-5.7";
+  name = "ncurses-5.9";
 
   src = fetchurl {
     url = "mirror://gnu/ncurses/${name}.tar.gz";
-    sha256 = "1x4q6kma6zgg438llbgiac3kik7j2lln9v97jdffv3fyqyjxx6qa";
-  };
-
-  crossAttrs = {
-    patches = [ ./wint_t.patch ];
+    sha256 = "0fsn7xis81za62afan0vvm38bvgzg5wfmv1m86flqcj0nj7jjilh";
   };
 
   configureFlags = ''
@@ -31,7 +27,11 @@ stdenv.mkDerivation (rec {
 
   enableParallelBuilding = true;
 
-  preBuild = ''sed -e "s@\([[:space:]]\)sh @\1''${SHELL} @" -i */Makefile Makefile'';
+  preBuild =
+    # On Darwin, we end up using the native `sed' during bootstrap, and it
+    # fails to run this command, which isn't needed anyway.
+    stdenv.lib.optionalString (!stdenv.isDarwin)
+    ''sed -e "s@\([[:space:]]\)sh @\1''${SHELL} @" -i */Makefile Makefile'';
 
   # When building a wide-character (Unicode) build, create backward
   # compatibility links from the the "normal" libraries to the

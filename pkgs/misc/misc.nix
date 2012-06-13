@@ -95,7 +95,7 @@ in
         )
       }
 
-      ensureDir $target/{include,lib}
+      mkdir -p $target/{include,lib}
       link $target/lib "$(echo "''${!LIB_PATHS[@]}")"
       link $target/include "$(echo "''${!INCLUDE_PATHS[@]}")"
       echo "''${!LIBS[@]}" > $target/libs
@@ -109,15 +109,15 @@ in
   # build a debug version of a package
   debugVersion = pkg: lib.overrideDerivation pkg (attrs: {
 
-    prePhases = ["preHook"] ++ lib.optionals (pkgs ? prePhases) pkgs.prePhases;
+    prePhases = ["debugPhase"] ++ lib.optionals (attrs ? prePhases) attrs.prePhases;
+    postPhases = ["objectsPhase"] ++ lib.optionals (attrs ? postPhases) attrs.postPhases;
 
     dontStrip = true;
 
-    NIX_STRIP_DEBUG=0;
     CFLAGS="-ggdb -O0";
     CXXFLAGS="-ggdb -O0";
 
-    preHook = ''
+    debugPhase = ''
       s=$out/src
       mkdir -p $s; cd $s;
       export TMP=$s
@@ -129,5 +129,38 @@ in
       echo "file should tell that executable has not been stripped"
     '';
 
+    objectsPhase = ''
+      cd $out/src
+      find . -name "*.o" -exec rm {} \;
+    '';
+  });
+
+  # build an optimized ersion of a package but with symbols and source
+  symbolsVersion = pkg: lib.overrideDerivation pkg (attrs: {
+
+    prePhases = ["debugPhase"] ++ lib.optionals (attrs ? prePhases) attrs.prePhases;
+    postPhases = ["objectsPhase"] ++ lib.optionals (attrs ? postPhases) attrs.postPhases;
+
+    dontStrip = true;
+
+    CFLAGS="-g -O2";
+    CXXFLAGS="-g -O2";
+
+    debugPhase = ''
+      s=$out/src
+      mkdir -p $s; cd $s;
+      export TMP=$s
+      export TEMP=$s
+
+      for var in CFLAGS CXXFLAGS NIX_CFLAGS_COMPILE; do
+        declare -x "$var=''${!var} -g -O2"
+      done
+      echo "file should tell that executable has not been stripped"
+    '';
+
+    objectsPhase = ''
+      cd $out/src
+      find . -name "*.o" -exec rm {} \;
+    '';
   });
 }

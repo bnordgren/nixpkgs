@@ -2,16 +2,19 @@
    also builds the documentation and tests whether the Nix expressions
    evaluate correctly. */
 
-{ nixpkgs ? {outPath = (import ./all-packages.nix {}).lib.cleanSource ../..; rev = 1234;}
+{ nixpkgs ? { outPath = (import ./all-packages.nix {}).lib.cleanSource ../..; revCount = 1234; shortRev = "abcdef"; }
 , officialRelease ? false
 }:
 
 with import nixpkgs.outPath {};
 
-releaseTools.makeSourceTarball {
+releaseTools.sourceTarball {
   name = "nixpkgs-tarball";
   src = nixpkgs;
   inherit officialRelease;
+
+  version = builtins.readFile ../../VERSION;
+  versionSuffix = if officialRelease then "" else "pre${toString nixpkgs.revCount}_${nixpkgs.shortRev}";
 
   buildInputs = [
     lzma
@@ -24,7 +27,7 @@ releaseTools.makeSourceTarball {
 
   configurePhase = ''
     eval "$preConfigure"
-    releaseName=nixpkgs-$(cat $src/VERSION)$VERSION_SUFFIX
+    releaseName=nixpkgs-$VERSION$VERSION_SUFFIX
     echo "release name is $releaseName"
     echo $releaseName > relname
   '';
@@ -41,6 +44,10 @@ releaseTools.makeSourceTarball {
   doCheck = true;
 
   checkPhase = ''
+    export NIX_DB_DIR=$TMPDIR
+    export NIX_STATE_DIR=$TMPDIR
+    nix-store --init
+  
     # Run the regression tests in `lib'.
     res="$(nix-instantiate --eval-only --strict pkgs/lib/tests.nix)"
     if test "$res" != "[ ]"; then
@@ -53,7 +60,7 @@ releaseTools.makeSourceTarball {
         header "checking pkgs/top-level/all-packages.nix on $platform"
         nix-env --readonly-mode -f pkgs/top-level/all-packages.nix \
             --show-trace --argstr system "$platform" \
-            -qa \* --drv-path --system-filter \* --system --meta --xml
+            -qa \* --drv-path --system-filter \* --system --meta --xml > /dev/null
         stopNest
     done
 
@@ -66,18 +73,19 @@ releaseTools.makeSourceTarball {
   distPhase = ''
     find . -name "\.svn" -exec rm -rvf {} \; -prune
   
-    ensureDir $out/tarballs
+    mkdir -p $out/tarballs
     mkdir ../$releaseName
     cp -prd . ../$releaseName
+    echo nixpkgs > ../$releaseName/channel-name
     (cd .. && tar cfa $out/tarballs/$releaseName.tar.bz2 $releaseName) || false
     (cd .. && tar cfa $out/tarballs/$releaseName.tar.lzma $releaseName) || false
 
-    ensureDir $out/release-notes
+    mkdir -p $out/release-notes
     cp doc/NEWS.html $out/release-notes/index.html
     cp doc/style.css $out/release-notes/
     echo "doc release-notes $out/release-notes" >> $out/nix-support/hydra-build-products
 
-    ensureDir $out/manual
+    mkdir -p $out/manual
     cp doc/manual.html $out/manual/index.html
     cp doc/style.css $out/manual/
     echo "doc manual $out/manual" >> $out/nix-support/hydra-build-products

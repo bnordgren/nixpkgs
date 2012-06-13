@@ -2,8 +2,8 @@
 
 cabal.mkDerivation (self: {
   pname = "derive";
-  version = "2.5.5";
-  sha256 = "1vv7y2jfyxq2abh4avyjwia309a6rylbyiqia1m0ka7zwv2rxd6y";
+  version = "2.5.8";
+  sha256 = "0l11pscya7mrn0502q8ndqn551k5aygbm7pihhs0nz8wwzr82xdv";
   isLibrary = true;
   isExecutable = true;
   buildDepends = [
@@ -14,9 +14,6 @@ cabal.mkDerivation (self: {
     description = "A program and library to derive instances for data types";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

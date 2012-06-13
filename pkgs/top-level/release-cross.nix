@@ -17,10 +17,9 @@ let
       #xorgserver.hostDrv = nativePlatforms;
     };
     nixUnstable.hostDrv = nativePlatforms;
-    linuxPackages_2_6_32.kernel.hostDrv = linux;
-    linuxPackages_2_6_33.kernel.hostDrv = linux;
-    linuxPackages_2_6_34.kernel.hostDrv = linux;
-    linuxPackages_2_6_35.kernel.hostDrv = linux;
+    linuxPackages_2_6_39.kernel.hostDrv = linux;
+    linuxPackages_3_3.kernel.hostDrv = linux;
+    linuxPackages_3_4.kernel.hostDrv = linux;
   };
 
   /* Basic list of packages to be natively built,
@@ -165,6 +164,29 @@ in {
   };
 }) // (
 
+/* Test some cross builds on mingw-w64 */
+let
+  crossSystem = {
+      # That's the triplet they use in the mingw-w64 docs,
+      # and it's relevant for nixpkgs conditions.
+      config = "x86_64-w64-mingw32";
+      arch = "x86_64"; # Irrelevant
+      libc = "msvcrt"; # This distinguishes the mingw (non posix) toolchain
+      platform = {};
+  };
+in {
+  crossMingwW64 = mapTestOnCross crossSystem {
+    coreutils.hostDrv = nativePlatforms;
+    boehmgc.hostDrv = nativePlatforms;
+    gmp.hostDrv = nativePlatforms;
+    guile_1_8.hostDrv = nativePlatforms;
+    libffi.hostDrv = nativePlatforms;
+    libtool.hostDrv = nativePlatforms;
+    libunistring.hostDrv = nativePlatforms;
+    windows.wxMSW.hostDrv = nativePlatforms;
+  };
+}) // (
+
 /* GNU aka. GNU/Hurd.  */
 let
   crossSystem = {
@@ -182,7 +204,7 @@ in {
     gnu.hurdCross = nativePlatforms;
     gnu.mach.hostDrv = nativePlatforms;
     gnu.mig = nativePlatforms;
-    gnu.smbfs = nativePlatforms;
+    gnu.smbfs.hostDrv = nativePlatforms;
 
     coreutils.hostDrv = nativePlatforms;
     ed.hostDrv = nativePlatforms;

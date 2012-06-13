@@ -1,17 +1,18 @@
-{stdenv, fetchurl, ghc, perl, gmp, ncurses, darwinInstallNameToolUtility}:
+{ stdenv, fetchurl, ghc, perl, gmp, ncurses }:
 
 stdenv.mkDerivation rec {
-  version = "7.4.0.20120126";
+  version = "7.5.20120607";
 
   name = "ghc-${version}";
 
   src = fetchurl {
-    url = "http://haskell.org/ghc/dist/7.4.1-rc2/${name}-src.tar.bz2";
-    sha256 = "0arnvzhwjzk2z3m2891b4z13p4v1c84f31jgyj13a1fbfpylgs64";
+    url = "http://haskell.org/ghc/dist/current/dist/${name}-src.tar.bz2";
+    sha256 = "1xrdx646g5ip2f2jypbm46y6jis3ddf8bild2704swbl2j4yb3vb";
   };
 
-  buildInputs = [ghc perl gmp ncurses] ++
-    (if stdenv.isDarwin then [darwinInstallNameToolUtility] else []);
+  buildInputs = [ ghc perl gmp ncurses ];
+
+  enableParallelBuilding = true;
 
   buildMK = ''
     libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-libraries="${gmp}/lib"

@@ -6,14 +6,12 @@ cabal.mkDerivation (self: {
   sha256 = "0r3js5i468lqlsnvb04iw6gdl81gs3cgqids3xpi4p5qpynbyc02";
   buildDepends = [ OpenGL ];
   extraLibraries = [ freeglut libICE libSM libXi libXmu mesa ];
+  noHaddock = true;
   meta = {
     homepage = "http://www.haskell.org/HOpenGL/";
     description = "A binding for the OpenGL Utility Toolkit";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

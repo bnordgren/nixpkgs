@@ -1,11 +1,13 @@
-{ stdenv, fetchsvn, alsaLib, aubio, boost, cairomm, curl, fftw,
-fftwSinglePrec, flac, glib, glibmm, gtk, gtkmm, jackaudio,
-libgnomecanvas, libgnomecanvasmm, liblo, libmad, libogg, librdf,
-librdf_raptor, librdf_rasqal, libsamplerate, libsigcxx, libsndfile,
-libusb, libuuid, libxml2, libxslt, pango, perl, pkgconfig, python }:
+{ stdenv, fetchsvn, alsaLib, aubio, boost, cairomm, curl, fftw
+, fftwSinglePrec, flac, glib, glibmm, gtk, gtkmm, jackaudio
+, libgnomecanvas, libgnomecanvasmm, liblo, libmad, libogg, librdf
+, librdf_raptor, librdf_rasqal, libsamplerate, libsigcxx, libsndfile
+, libusb, libuuid, libxml2, libxslt, makeWrapper, pango, perl, pkgconfig
+, python }:
 
 let
-  rev = "9942";
+  # Ardour 3 Beta 4a
+  rev = "12406";
 in
 
 stdenv.mkDerivation {
@@ -14,7 +16,7 @@ stdenv.mkDerivation {
   src = fetchsvn {
     url = http://subversion.ardour.org/svn/ardour2/branches/3.0;
     inherit rev;
-    sha256 = "5f463e5a67bcb1ee6b4d24c25307419ea14ce52130819054b775e377c31a0664";
+    sha256 = "0a68xb3l36m5908y3airxw1b3bymhrjrf1l492mgcvviq6pn7pmk";
   };
 
   buildInputs = [ alsaLib aubio boost cairomm curl fftw fftwSinglePrec
@@ -34,6 +36,12 @@ stdenv.mkDerivation {
   buildPhase = "python waf";
 
   installPhase = "python waf install";
+
+  postInstall = ''
+    mkdir -pv $out/gtk-2.0/2.10.0/engines
+    mv lib/ardour3/libclearlooks.so $out/gtk-2.0/2.10.0/engines/
+    wrapProgram $out/bin/ardour3 --prefix GTK_PATH : $out/gtk-2.0
+    '';
 
   meta = with stdenv.lib; {
     description = "Multi-track hard disk recording software";

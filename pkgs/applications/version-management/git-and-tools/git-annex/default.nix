@@ -1,28 +1,32 @@
 { stdenv, fetchurl, curl, dataenc, findutils, ghc, git, hS3, hslogger, HTTP, hxt
 , ikiwiki, json, libuuid, MissingH, monadControl, mtl, network, pcreLight, perl
 , QuickCheck2, rsync, SHA, testpack, utf8String, which, liftedBase, coreutils
+, IfElse, bloomfilter, editDistance, openssh
 }:
 
 let
-  version = "3.20120123";
+  version = "3.20120605";
 in
 stdenv.mkDerivation {
   name = "git-annex-${version}";
 
   src = fetchurl {
-    url = "http://ftp.de.debian.org/debian/pool/main/g/git-annex/git-annex_${version}.tar.gz";
-    sha256 = "dad93dad08ddfd0d239ee57bbf61dd2ee3755d9a94e2946ac5d7bb4cfa565488";
+    url = "http://git.kitenet.net/?p=git-annex.git;a=snapshot;sf=tgz;h=refs/tags/${version}";
+    sha256 = "5c8f6575bc6e1bc9bc19e1fb1b6305d2a1aee3365927ccfaf9aa48a200775900";
+    name = "git-annex-${version}.tar.gz";
   };
 
   buildInputs = [
     curl dataenc findutils ghc git hS3 hslogger HTTP hxt ikiwiki json
     libuuid MissingH monadControl mtl network pcreLight perl QuickCheck2
-    rsync SHA testpack utf8String which liftedBase
+    rsync SHA testpack utf8String which liftedBase IfElse bloomfilter
+    editDistance openssh
   ];
 
   checkTarget = "test";
   doCheck = true;
 
+  # The 'add_url' test fails because it attempts to use the network.
   preConfigure = ''
     makeFlagsArray=( PREFIX=$out )
     sed -i -e 's|#!/usr/bin/perl|#!${perl}/bin/perl|' mdwn2man

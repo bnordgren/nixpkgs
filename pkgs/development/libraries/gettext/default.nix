@@ -1,5 +1,3 @@
-# XXX: Remove me when `stdenv-updates' is merged.
-
 { stdenv, fetchurl, libiconv }:
 
 stdenv.mkDerivation (rec {
@@ -10,7 +8,14 @@ stdenv.mkDerivation (rec {
     sha256 = "1sa3ch12qxa4h3ya6hkz119yclcccmincl9j20dhrdx5mykp3b4k";
   };
 
-  configureFlags = "--disable-csharp";
+  configureFlags = [ "--disable-csharp" ]
+     ++ (stdenv.lib.optionals stdenv.isCygwin
+          [ # We have a static libiconv, so we can only build the static lib.
+            "--disable-shared" "--enable-static"
+
+            # Share the cache among the various `configure' runs.
+            "--config-cache"
+          ]);
 
   # On cross building, gettext supposes that the wchar.h from libc
   # does not fulfill gettext needs, so it tries to work with its
@@ -23,6 +28,10 @@ stdenv.mkDerivation (rec {
     fi
   '';
 
+  buildInputs = stdenv.lib.optional (!stdenv.isLinux) libiconv;
+  
+  enableParallelBuilding = true;
+      
   crossAttrs = {
     buildInputs = stdenv.lib.optional (stdenv.gccCross.libc ? libiconv)
       stdenv.gccCross.libc.libiconv.hostDrv;
@@ -61,8 +70,13 @@ stdenv.mkDerivation (rec {
 
 //
 
-(if (!stdenv.isLinux) # any non-GNU system
-    then {
-      buildInputs = [ libiconv ];
-    }
-    else {}))
+stdenv.lib.optionalAttrs stdenv.isCygwin {
+  patchPhase =
+   # Make sure `error.c' gets compiled and is part of `libgettextlib.la'.
+   # This fixes:
+   # gettext-0.18.1.1/gettext-tools/src/msgcmp.c:371: undefined reference to `_error_message_count'
+
+   '' sed -i gettext-tools/gnulib-lib/Makefile.in \
+          -e 's/am_libgettextlib_la_OBJECTS =/am_libgettextlib_la_OBJECTS = error.lo/g'
+   '';
+})

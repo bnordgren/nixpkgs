@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgconfig, glib, atk, pango129, cairo, perl, xlibs
+{ stdenv, fetchurl, pkgconfig, glib, atk, pango, cairo, perl, xlibs
 , gdk_pixbuf, xz
 , xineramaSupport ? true
 , cupsSupport ? true, cups ? null
@@ -17,10 +17,10 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  buildNativeInputs = [ perl pkgconfig xz ];
+  buildNativeInputs = [ perl pkgconfig ];
 
   propagatedBuildInputs =
-    [ xlibs.xlibs glib atk pango129 gdk_pixbuf cairo
+    [ xlibs.xlibs glib atk pango gdk_pixbuf cairo
       xlibs.libXrandr xlibs.libXrender xlibs.libXcomposite xlibs.libXi
     ]
     ++ stdenv.lib.optional xineramaSupport xlibs.libXinerama

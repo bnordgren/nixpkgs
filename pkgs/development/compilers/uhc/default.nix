@@ -1,18 +1,21 @@
-{ stdenv, coreutils, glibc, fetchsvn, m4, libtool, ghc, uulib
+{ stdenv, coreutils, glibc, fetchgit, m4, libtool, ghc, uulib
 , uuagc, mtl, network, binary, llvm, fgl, syb
 }:
 
-let
-  revision = "2426";
-in
-stdenv.mkDerivation {
-  name = "uhc-svn-${revision}";
+# this check won't be needed anymore after ghc-wrapper is fixed
+# to show ghc-builtin packages in "ghc-pkg list" output.
+let binaryIsBuiltIn = builtins.compareVersions "7.2.1" ghc.ghcVersion != 1;
 
-  src = fetchsvn {
-     url = "https://subversion.cs.uu.nl/repos/project.UHC.pub/trunk/EHC";
-     rev = revision;
-     sha256 = "06963edb673697f3eac357eccdc6d4bf7fbe7b9b92a96e3e329a4caf53f85c4c";
+in stdenv.mkDerivation {
+  name = "uhc-svn-git20120502";
+
+  src = fetchgit {
+     url = "https://github.com/UU-ComputerScience/uhc.git";
+     rev = "ab26d787657bb729d8a4f92ef5d067d9990f6ce3";
+     sha256 = "66c5b6d95dc80a652f6e17476a1b18fbef4b4ff6199a92d033f0055526ec97ff";
   };
+
+  postUnpack = "sourceRoot=\${sourceRoot}/EHC";
 
   propagatedBuildInputs = [mtl network binary fgl syb];
   buildInputs = [coreutils m4 ghc libtool uulib uuagc];
@@ -30,6 +33,9 @@ stdenv.mkDerivation {
     sed -i "s|--user|--package-db=$p|g" mk/shared.mk.in
     sed -i "s|-fglasgow-exts|-fglasgow-exts -package-conf=$p|g" mk/shared.mk.in
     sed -i "s|/bin/date|${coreutils}/bin/date|g" mk/dist.mk
+    sed -i "s|/bin/date|${coreutils}/bin/date|g" mk/config.mk.in
+  '' + stdenv.lib.optionalString binaryIsBuiltIn ''
+    sed -i "s|ghcLibBinary=no|ghcLibBinaryExists=yes|" configure
   '';
 
   meta = {

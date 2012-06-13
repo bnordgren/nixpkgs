@@ -12,6 +12,9 @@
 , lcovExtraTraceFiles ? []
 , src, stdenv
 , name ? if doCoverageAnalysis then "nix-coverage" else "nix-build"
+, failureHook ? null
+, prePhases ? []
+, postPhases ? []
 , ... } @ args:
 
 stdenv.mkDerivation (
@@ -22,11 +25,9 @@ stdenv.mkDerivation (
 
     # When doing coverage analysis, we don't care about the result.
     dontInstall = doCoverageAnalysis;
+    useTempPrefix = doCoverageAnalysis;
 
     showBuildStats = true;
-
-    postPhases =
-      (stdenv.lib.optional doCoverageAnalysis "coverageReportPhase") ++ ["finalPhase"];
 
     finalPhase =
       ''
@@ -37,12 +38,13 @@ stdenv.mkDerivation (
         fi
       '';
 
-    failureHook = ''
+    failureHook = (stdenv.lib.optionalString (failureHook != null) failureHook) +
+    ''
       if test -n "$succeedOnFailure"; then
           if test -n "$keepBuildDirectory"; then
               KEEPBUILDDIR="$out/`basename $TMPDIR`"
               header "Copying build directory to $KEEPBUILDDIR"
-              ensureDir $KEEPBUILDDIR
+              mkdir -p $KEEPBUILDDIR
               cp -R $TMPDIR/* $KEEPBUILDDIR
               stopNest 
           fi
@@ -56,13 +58,6 @@ stdenv.mkDerivation (
     name = name + (if src ? version then "-" + src.version else "");
   
     postHook = ''
-      ensureDir $out/nix-support
-      echo "$system" > $out/nix-support/system
-
-      if test -z "${toString doCoverageAnalysis}"; then
-          echo "nix-build none $out" >> $out/nix-support/hydra-build-products
-      fi
-
       # If `src' is the result of a call to `makeSourceTarball', then it
       # has a subdirectory containing the actual tarball(s).  If there are
       # multiple tarballs, just pick the first one.
@@ -77,9 +72,18 @@ stdenv.mkDerivation (
           export CFLAGS="-O0"
           export CXXFLAGS="-O0"
       fi
-
     ''; # */
 
+    initPhase = ''
+      mkdir -p $out/nix-support
+      echo "$system" > $out/nix-support/system
+
+      if [ -z "${toString doCoverageAnalysis}" ]; then
+          echo "nix-build none $out" >> $out/nix-support/hydra-build-products
+      fi
+    '';
+
+    prePhases = ["initPhase"] ++ prePhases;
 
     # In the report phase, create a coverage analysis report.
     coverageReportPhase = if doCoverageAnalysis then ''
@@ -102,6 +106,9 @@ stdenv.mkDerivation (
     lcovFilter = ["/nix/store/*"] ++ lcovFilter;
 
     inherit lcovExtraTraceFiles;
+
+    postPhases = postPhases ++
+      (stdenv.lib.optional doCoverageAnalysis "coverageReportPhase") ++ ["finalPhase"];
 
     meta = (if args ? meta then args.meta else {}) // {
       description = if doCoverageAnalysis then "Coverage analysis" else "Native Nix build on ${stdenv.system}";

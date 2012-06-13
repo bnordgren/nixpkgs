@@ -1,7 +1,10 @@
 { pkgs
 , linuxKernel ? pkgs.linux
 , img ? "bzImage"
-, rootModules ? [ "cifs" "virtio_net" "virtio_pci" "virtio_blk" "virtio_balloon" "nls_utf8" "ext2" "ext3" "unix" ]
+, rootModules ?
+    [ "cifs" "virtio_net" "virtio_pci" "virtio_blk" "virtio_balloon" "nls_utf8" "ext2" "ext3"
+      "unix" "hmac" "md4" "ecb" "des_generic"
+    ]
 }:
 
 with pkgs;
@@ -29,14 +32,14 @@ rec {
       allowedReferences = [ "out" modulesClosure ]; # prevent accidents like glibc being included in the initrd
     }
     ''
-      ensureDir $out/bin
-      ensureDir $out/lib
+      mkdir -p $out/bin
+      mkdir -p $out/lib
       
       # Copy what we need from Glibc.
-      cp -p ${glibc}/lib/ld-linux*.so.? $out/lib
-      cp -p ${glibc}/lib/libc.so.* $out/lib
-      cp -p ${glibc}/lib/librt.so.* $out/lib
-      cp -p ${glibc}/lib/libdl.so.* $out/lib
+      cp -p ${pkgs.stdenv.glibc}/lib/ld-linux*.so.? $out/lib
+      cp -p ${pkgs.stdenv.glibc}/lib/libc.so.* $out/lib
+      cp -p ${pkgs.stdenv.glibc}/lib/librt.so.* $out/lib
+      cp -p ${pkgs.stdenv.glibc}/lib/libdl.so.* $out/lib
 
       # Copy some utillinux stuff.
       cp ${utillinux}/bin/mount ${utillinux}/bin/umount $out/bin
@@ -208,7 +211,8 @@ rec {
 
 
   qemuCommandLinux = ''
-    ${kvm}/bin/qemu-system-x86_64 \
+    ${kvm}/bin/qemu-kvm \
+      ${lib.optionalString (pkgs.stdenv.system == "x86_64-linux") "-cpu kvm64"} \
       -nographic -no-reboot \
       -net nic,model=virtio \
       -chardev socket,id=samba,path=./samba \
@@ -348,11 +352,12 @@ rec {
     QEMU_OPTS = "-m ${toString (if attrs ? memSize then attrs.memSize else 256)}";
   });
 
+  
   extractFs = {file, fs ? null} :
     with pkgs; runInLinuxVM (
     stdenv.mkDerivation {
       name = "extract-file";
-      buildInputs = [utillinuxng];
+      buildInputs = [ utillinux ];
       buildCommand = ''
         ln -s ${linux}/lib /lib
         ${module_init_tools}/sbin/modprobe loop
@@ -365,19 +370,20 @@ rec {
         ${module_init_tools}/sbin/modprobe cramfs
         mknod /dev/loop0 b 7 0
 
-        ensureDir $out
-        ensureDir tmp
+        mkdir -p $out
+        mkdir -p tmp
         mount -o loop,ro,ufstype=44bsd ${lib.optionalString (fs != null) "-t ${fs} "}${file} tmp ||
           mount -o loop,ro ${lib.optionalString (fs != null) "-t ${fs} "}${file} tmp
         cp -Rv tmp/* $out/ || exit 0
       '';
     });
 
+    
   extractMTDfs = {file, fs ? null} :
     with pkgs; runInLinuxVM (
     stdenv.mkDerivation {
       name = "extract-file-mtd";
-      buildInputs = [utillinuxng mtdutils];
+      buildInputs = [ utillinux mtdutils ];
       buildCommand = ''
         ln -s ${linux}/lib /lib
         ${module_init_tools}/sbin/modprobe mtd
@@ -389,8 +395,8 @@ rec {
         mknod /dev/mtd0 c 90 0
         mknod /dev/mtdblock0 b 31 0
 
-        ensureDir $out
-        ensureDir tmp
+        mkdir -p $out
+        mkdir -p tmp
 
         dd if=${file} of=/dev/mtd0
         mount ${lib.optionalString (fs != null) "-t ${fs} "}/dev/mtdblock0 tmp
@@ -399,8 +405,10 @@ rec {
       '';
     });
 
+    
   qemuCommandGeneric = ''
-    ${kvm}/bin/qemu-system-x86_64 \
+    PATH="${samba}/sbin:$PATH" \
+    ${kvm}/bin/qemu-kvm \
       -nographic -no-reboot \
       -smb $(pwd) -hda $diskImage \
       $QEMU_OPTS
@@ -425,7 +433,6 @@ rec {
      - Power-off or reboot the machine.
   */
   runInGenericVM = drv: lib.overrideDerivation drv (attrs: {
-    system = "i686-linux";
     requiredSystemFeatures = [ "kvm" ];
     builder = "${bash}/bin/sh";
     args = ["-e" (vmRunCommand qemuCommandGeneric)];
@@ -611,7 +618,7 @@ rec {
     installPhase = ''
       eval "$preInstall"
 
-      ensureDir $out/$outDir
+      mkdir -p $out/$outDir
       find $rpmout -name "*.rpm" -exec cp {} $out/$outDir \;
 
       for i in $out/$outDir/*.rpm; do
@@ -755,7 +762,7 @@ rec {
       bunzip2 < ${packagesList} > ./Packages
 
       # Work around this bug: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=452279
-      substituteInPlace ./Packages --replace x86_64-linux-gnu x86-64-linux-gnu
+      sed -i ./Packages -e s/x86_64-linux-gnu/x86-64-linux-gnu/g
 
       ${perl}/bin/perl -I${dpkg} -w ${deb/deb-closure.pl} \
         ./Packages ${urlPrefix} ${toString packages} > $out
@@ -1222,6 +1229,28 @@ rec {
       packages = commonDebPackages ++ [ "diffutils" ];
     };
 
+    ubuntu1204i386 = {
+      name = "ubuntu-12.04-oneiric-i386";
+      fullName = "Ubuntu 12.04 Precise (i386)";
+      packagesList = fetchurl {
+        url = mirror://ubuntu/dists/precise/main/binary-i386/Packages.bz2;
+        sha256 = "18ns9h4qhvjfcip9z55grzi371racxavgqkp6b5kfkdq2wwwax2d";
+      };
+      urlPrefix = mirror://ubuntu;
+      packages = commonDebPackages ++ [ "diffutils" ];
+    };
+ 
+    ubuntu1204x86_64 = {
+      name = "ubuntu-12.04-oneiric-amd64";
+      fullName = "Ubuntu 12.04 Precise (amd64)";
+      packagesList = fetchurl {
+        url = mirror://ubuntu/dists/precise/main/binary-amd64/Packages.bz2;
+        sha256 = "1aabpn0hdih6cbabyn87yvhccqj44q9k03mqmjsb920iqlckl3fc";
+      };
+      urlPrefix = mirror://ubuntu;
+      packages = commonDebPackages ++ [ "diffutils" ];
+    };
+
     debian40i386 = {
       name = "debian-4.0r9-etch-i386";
       fullName = "Debian 4.0r9 Etch (i386)";
@@ -1245,22 +1274,22 @@ rec {
     };
 
     debian50i386 = {
-      name = "debian-5.0.9-lenny-i386";
-      fullName = "Debian 5.0.9 Lenny (i386)";
+      name = "debian-5.0.10-lenny-i386";
+      fullName = "Debian 5.0.10 Lenny (i386)";
       packagesList = fetchurl {
         url = mirror://debian/dists/lenny/main/binary-i386/Packages.bz2;
-        sha256 = "07f54775e2b54e201c7020cd65212fbb44288b1071a73f630f58b68b2d08b2af";
+        sha256 = "fb390cf043a5b6bac50879ce1c0827882abdb560050313a6a326a03a4fc761d6";
       };
       urlPrefix = mirror://debian;
       packages = commonDebianPackages;
     };
 
     debian50x86_64 = {
-      name = "debian-5.0.9-lenny-amd64";
-      fullName = "Debian 5.0.9 Lenny (amd64)";
+      name = "debian-5.0.10-lenny-amd64";
+      fullName = "Debian 5.0.10 Lenny (amd64)";
       packagesList = fetchurl {
         url = mirror://debian/dists/lenny/main/binary-amd64/Packages.bz2;
-        sha256 = "1jqb3rr5q5y7yyhrymwa51djsydm92zbbmg4vbif65i7sp9ggky0";
+        sha256 = "1y4bb3n770fgwsrw8qiwsgf17k0ws2d6jmcfvqv07lj77dyj53wc";
       };
       urlPrefix = mirror://debian;
       packages = commonDebianPackages;
@@ -1271,7 +1300,7 @@ rec {
       fullName = "Debian 6.0.4 Squeeze (i386)";
       packagesList = fetchurl {
         url = mirror://debian/dists/squeeze/main/binary-i386/Packages.bz2;
-        sha256 = "5686732aa690d80ba4c390af3f7b9ba3c3c8c17861c89bca3a3694c403d7b7e6";
+        sha256 = "1aih4n1iz4gzzm5cy1j14mpx8i25jj1237994j33k7dm0gnqgr2w";
       };
       urlPrefix = mirror://debian;
       packages = commonDebianPackages;
@@ -1282,7 +1311,7 @@ rec {
       fullName = "Debian 6.0.4 Squeeze (amd64)";
       packagesList = fetchurl {
         url = mirror://debian/dists/squeeze/main/binary-amd64/Packages.bz2;
-        sha256 = "525f919bb48a4d2d0cb3a4fb5b0d4338e7936f68753ca945358ea1c3792ea7b7";
+        sha256 = "1gb3im7kl8dwd7z82xj4wb5g58r86fjj8cirvq0ssrvcm9bqaiz7";
       };
       urlPrefix = mirror://debian;
       packages = commonDebianPackages;

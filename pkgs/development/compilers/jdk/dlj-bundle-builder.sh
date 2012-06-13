@@ -10,7 +10,7 @@ patchelf --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" --set-rpath 
 echo "constructing JDK and JRE installations"
 if test -z "$installjdk"; then
   sh ${construct} . tmp-linux-jdk tmp-linux-jre
-  ensureDir $out
+  mkdir -p $out
   cp -R tmp-linux-jre/* $out
 else
   sh ${construct} . $out tmp-linux-jre
@@ -53,5 +53,3 @@ fi
 mkdir $jrePath/lib/$architecture/plugins
 ln -s $jrePath/lib/$architecture/libnpjp2.so $jrePath/lib/$architecture/plugins
 
-# Workaround for assertions in xlib, see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6532373.
-substituteInPlace $jrePath/lib/*/xawt/libmawt.so --replace XINERAMA FAKEEXTN

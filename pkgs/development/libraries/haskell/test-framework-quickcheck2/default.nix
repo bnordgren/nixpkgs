@@ -2,8 +2,8 @@
 
 cabal.mkDerivation (self: {
   pname = "test-framework-quickcheck2";
-  version = "0.2.12";
-  sha256 = "08qr2lh1akjy5daxxk1sy59sg94hvv5s5njs9x6lrx648hy7y8iy";
+  version = "0.2.12.2";
+  sha256 = "08m8y78qy23imcwyqdqla7syxdf91iqrb0j8g6g7gwsg5asjq6ip";
   buildDepends = [
     extensibleExceptions QuickCheck random testFramework
   ];
@@ -12,9 +12,6 @@ cabal.mkDerivation (self: {
     description = "QuickCheck2 support for the test-framework package";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

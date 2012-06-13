@@ -5,18 +5,16 @@
 , libcaca, pulseaudio, flac, schroedinger, libxml2, librsvg
 , mpeg2dec, udev, gnutls, avahi, libcddb, jackaudio, SDL, SDL_image
 , libmtp, unzip, taglib, libkate, libtiger, libv4l, samba, liboggz
-, libass, libva, libdvbpsi
+, libass, libva, libdvbpsi, libdc1394, libraw1394
 }:
 
 stdenv.mkDerivation rec {
   name = "vlc-${version}";
-  version = "2.0.0";
-
-  patchPhase = ''sed -e "s@/bin/echo@echo@g" -i configure'';
+  version = "2.0.1";
 
   src = fetchurl {
     url = "http://download.videolan.org/pub/videolan/vlc/${version}/${name}.tar.xz";
-    sha256 = "455fc04b5f7ce3d7294ed71a9dd172ff4eb97875cfc30b554ef4ce55ec6f5106";
+    sha256 = "7f485725c17487a77d70844cbd9acf528360d65cd6ff79d206657920f4fcbf4b";
   };
 
   buildInputs =
@@ -26,6 +24,7 @@ stdenv.mkDerivation rec {
       udev gnutls avahi libcddb jackaudio SDL SDL_image libmtp unzip taglib
       libkate libtiger libv4l samba liboggz libass libdvbpsi libva
       xlibs.xlibs xlibs.libXv xlibs.libXvMC xlibs.libXpm xlibs.xcbutilkeysyms
+      libdc1394 libraw1394
     ];
 
   buildNativeInputs = [ pkgconfig ];
@@ -33,7 +32,10 @@ stdenv.mkDerivation rec {
   configureFlags =
     [ "--enable-alsa"
       "--with-kde-solid=$out/share/apps/solid/actions"
+      "--enable-dc1394"
     ];
+
+  preConfigure = ''sed -e "s@/bin/echo@echo@g" -i configure'';
 
   enableParallelBuilding = true;
 

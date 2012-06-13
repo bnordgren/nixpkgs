@@ -73,7 +73,7 @@ stdenv.mkDerivation (
           if test -n "$keepBuildDirectory"; then
               KEEPBUILDDIR="$out/`basename $TMPDIR`"
               header "Copying build directory to $KEEPBUILDDIR"
-              ensureDir $KEEPBUILDDIR
+              mkdir -p $KEEPBUILDDIR
               cp -R $TMPDIR/* $KEEPBUILDDIR
               stopNest
           fi
@@ -90,8 +90,8 @@ stdenv.mkDerivation (
 
     buildInputs = buildInputs ++ bootstrapBuildInputs;
     
-    postHook = ''
-      ensureDir $out/nix-support
+    preUnpack = ''
+      mkdir -p $out/nix-support
     '';  
 
     postUnpack = ''

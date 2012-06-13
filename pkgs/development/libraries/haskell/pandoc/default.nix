@@ -6,8 +6,8 @@
 
 cabal.mkDerivation (self: {
   pname = "pandoc";
-  version = "1.9.1.1";
-  sha256 = "1npyc99f90fhbfddr6x5dlnwdc3i1pnhg4xiv12fmf1cl8xlcpyl";
+  version = "1.9.4.1";
+  sha256 = "0n3jfk7b1vn8b1ryys6lm1drdx469q26gi0chzlf0wss1ss07x78";
   isLibrary = true;
   isExecutable = true;
   buildDepends = [
@@ -20,9 +20,6 @@ cabal.mkDerivation (self: {
     description = "Conversion between markup formats";
     license = "GPL";
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

@@ -1,22 +1,20 @@
-{ cabal, liftedBase, monadControl, text, transformers
-, transformersBase
+{ cabal, liftedBase, monadControl, resourcet, text, transformers
+, transformersBase, void
 }:
 
 cabal.mkDerivation (self: {
   pname = "conduit";
-  version = "0.2.2";
-  sha256 = "1iwmf0zdrrxh8q3xja742j17nanj6va5zj9bs9a5m78whf8cc80j";
+  version = "0.4.2";
+  sha256 = "1v8s80g8gyxb139dzqbbh4qv6ax08g5smrvx2zc5sd2773wwqwz0";
   buildDepends = [
-    liftedBase monadControl text transformers transformersBase
+    liftedBase monadControl resourcet text transformers
+    transformersBase void
   ];
   meta = {
     homepage = "http://github.com/snoyberg/conduit";
     description = "Streaming data processing library";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

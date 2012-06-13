@@ -1,7 +1,7 @@
 {stdenv, ghc, packages ? [], makeWrapper}:
 
 stdenv.mkDerivation rec {
-  name = "ghc-${ghc.version}-linkdir";
+  name = "haskell-env-${ghc.name}";
 
   allPackages = stdenv.lib.closePropagation packages;
   buildInputs = allPackages ++ [makeWrapper];
@@ -10,19 +10,30 @@ stdenv.mkDerivation rec {
   unpackPhase = "true";
 
   installPhase = ''
+    numversion=$(${ghc}/bin/ghc --numeric-version)
+    majorversion=''${numversion%%.*}
+    minorversion=''${numversion#*.}
+    minorversion=''${minorversion%%.*}
+
+    if [[ $majorversion -gt 6 ]] && [[ $minorversion -gt 4 ]]; then
+      globalConf="--global-package-db"
+    else
+      globalConf="--global-conf"
+    fi
+
     originalTopDir="${ghc}/lib/ghc-${ghc.version}"
     originalPkgDir="$originalTopDir/package.conf.d"
     linkedTopDir="$out/lib"
     linkedPkgDir="$linkedTopDir/package.conf.d"
 
-    ensureDir $out/bin
-    ensureDir $linkedTopDir
-    ensureDir $linkedPkgDir
+    mkdir -p $out/bin
+    mkdir -p $linkedTopDir
+    mkdir -p $linkedPkgDir
 
     echo "Linking GHC core libraries:"
 
     echo -n "Linking $originalTopDir "
-    for f in $originalTopDir/*; do
+    for f in "$originalTopDir/"*; do
       if test -f $f; then
         ln -s $f $linkedTopDir
         echo -n .
@@ -31,7 +42,7 @@ stdenv.mkDerivation rec {
     echo
 
     echo -n "Linking $originalPkgDir "
-    for f in $originalPkgDir/*.conf; do
+    for f in "$originalPkgDir/"*.conf; do
       ln -s $f $linkedPkgDir
       echo -n .
     done
@@ -44,11 +55,11 @@ stdenv.mkDerivation rec {
       # Check if current path is a Cabal package for the current GHC
       if test -d $currentPkgDir; then
         echo -n "Linking $currentPath "
-        for f in $currentPath/bin/*; do
+        for f in "$currentPath/bin/"*; do
           ln -s $f $out/bin
           echo -n .
         done
-        for f in $currentPkgDir/*.conf; do
+        for f in "$currentPkgDir/"*.conf; do
           ln -s $f $linkedPkgDir
           echo -n .
         done
@@ -57,7 +68,7 @@ stdenv.mkDerivation rec {
     done
 
     echo -n "Generating package cache "
-    ${ghc}/bin/ghc-pkg --global-conf $linkedPkgDir recache
+    ${ghc}/bin/ghc-pkg $globalConf $linkedPkgDir recache
     echo .
 
     echo -n "Generating wrappers "
@@ -73,7 +84,7 @@ stdenv.mkDerivation rec {
     done
 
     for prg in ghc-pkg ghc-pkg-${ghc.version}; do
-      makeWrapper ${ghc}/bin/$prg $out/bin/$prg --add-flags "--global-conf $linkedPkgDir"
+      makeWrapper ${ghc}/bin/$prg $out/bin/$prg --add-flags "$globalConf $linkedPkgDir"
       echo -n .
     done
 

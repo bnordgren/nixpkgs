@@ -2,17 +2,14 @@
 
 cabal.mkDerivation (self: {
   pname = "shakespeare";
-  version = "0.10.3.1";
-  sha256 = "1wfw5qbgl4jl1r4gaw55mnsmn70vpzn7ykz3gbqzrf91wc6s3zj4";
+  version = "1.0.0.2";
+  sha256 = "04nk9l7c5wk3rbkk57s5as30zvsa7wzrsmhdak59i6v30ww22c9f";
   buildDepends = [ parsec text ];
   meta = {
-    homepage = "http://www.yesodweb.com/book/templates";
+    homepage = "http://www.yesodweb.com/book/shakespearean-templates";
     description = "A toolkit for making compile-time interpolated templates";
-    license = self.stdenv.lib.licenses.bsd3;
+    license = self.stdenv.lib.licenses.mit;
     platforms = self.ghc.meta.platforms;
-    maintainers = [
-      self.stdenv.lib.maintainers.andres
-      self.stdenv.lib.maintainers.simons
-    ];
+    maintainers = [ self.stdenv.lib.maintainers.andres ];
   };
 })

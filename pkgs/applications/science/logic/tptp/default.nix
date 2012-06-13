@@ -11,10 +11,10 @@ let
     (builtins.attrNames (builtins.removeAttrs x helperArgNames));
   sourceInfo = rec {
     baseName="TPTP";
-    version="5.1.0";
+    version="5.3.0";
     name="${baseName}-${version}";
     url="http://www.cs.miami.edu/~tptp/TPTP/Distribution/TPTP-v${version}.tgz";
-    hash="1wh2k575nn51ykg1jnwfwjqhg5x42k5vvn2spq09px26vhs4yksy";
+    hash="0xzybh332x53q4cmb3i47ygln0x6rd2nx810la1hmja9d1ixnz9b";
   };
 in
 rec {
@@ -31,7 +31,7 @@ rec {
     "patchBinaries" "makeLinks"];
 
   goTarget = a.fullDepEntry ''
-    ensureDir "$out"/share/
+    mkdir -p "$out"/share/
     cd "$out"/share/
   '' ["defEnsureDir" "minInit"];
 
@@ -54,7 +54,7 @@ rec {
   '' ["addInputs"];
 
   makeLinks = a.fullDepEntry ''
-    ensureDir "$out/bin"
+    mkdir -p "$out/bin"
     ln -s "../share/tptp/TPTP2X/tptp2X" "$out/bin"
     ln -s "../share/tptp/Scripts/tptp2T" "$out/bin"
     ln -s "../share/tptp/Scripts/tptp4X" "$out/bin"

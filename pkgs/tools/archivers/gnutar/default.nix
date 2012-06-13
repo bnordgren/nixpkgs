@@ -1,11 +1,11 @@
-{stdenv, fetchurl}:
+{ stdenv, fetchurl }:
 
-stdenv.mkDerivation rec {
-  name = "gnutar-1.25";
+stdenv.mkDerivation (rec {
+  name = "gnutar-1.26";
 
   src = fetchurl {
-    url = "mirror://gnu/tar/tar-1.25.tar.bz2";
-    sha256 = "0js9b1jd93kjk6dgf40y2fpgpnix247rk5aws2mjgwz0p10wxxpk";
+    url = "mirror://gnu/tar/tar-1.26.tar.bz2";
+    sha256 = "0hbdkzmchq9ycr2x1pxqdcgdbaxksh8c6ac0jf75jajhcks6jlss";
   };
 
   meta = {
@@ -33,3 +33,8 @@ stdenv.mkDerivation rec {
     platforms = stdenv.lib.platforms.all;
   };
 }
+  # May have some issues with root compilation because the bootstrap tool
+  # cannot be used as a login shell for now.
+// stdenv.lib.optionalAttrs (stdenv.system == "armv7l-linux") {
+  FORCE_UNSAFE_CONFIGURE = 1;
+})

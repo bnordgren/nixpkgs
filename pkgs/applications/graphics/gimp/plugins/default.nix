@@ -5,8 +5,7 @@
 
 { pkgs, gimp }:
 let
-  inherit (pkgs) stdenv fetchurl pkgconfig gtkLibs;
-  inherit (gtkLibs) glib;
+  inherit (pkgs) stdenv fetchurl pkgconfig glib;
   targetPluginDir = "$out/${gimp.name}-plugins";
   targetScriptDir = "$out/${gimp.name}-scripts";
   prefix = "plugin-gimp-";
@@ -15,11 +14,11 @@ let
     prePhases = "extraLib";
     extraLib = ''
       installScripts(){
-        ensureDir ${targetScriptDir};
+        mkdir -p ${targetScriptDir};
         for p in "$@"; do cp "$p" ${targetScriptDir}; done
       }
       installPlugins(){
-        ensureDir ${targetPluginDir};
+        mkdir -p ${targetPluginDir};
         for p in "$@"; do cp "$p" ${targetPluginDir}; done
       }
     '';
@@ -137,7 +136,7 @@ rec {
       url = http://registry.gimp.org/files/gimp-lqr-plugin-0.6.1.tar.bz2;
       sha256 = "00hklkpcimcbpjly4rjhfipaw096cpy768g9wixglwrsyqhil7l9";
     };
-    #postInstall = ''ensureDir $out/nix-support; echo "${libLQR}" > "$out/nix-support/propagated-user-env-packages"'';
+    #postInstall = ''mkdir -p $out/nix-support; echo "${libLQR}" > "$out/nix-support/propagated-user-env-packages"'';
     installPhase = "installPlugins src/gimp-lqr-plugin";
   };
 
@@ -190,7 +189,7 @@ rec {
     };
     installPhase = "
       installPlugins ufraw-gimp
-      ensureDir $out/bin
+      mkdir -p $out/bin
       cp ufraw $out/bin
     ";
   };
@@ -209,7 +208,7 @@ rec {
 
     installPhase = "
       installPlugins gimplensfun
-      ensureDir $out/bin
+      mkdir -p $out/bin
       cp gimplensfun $out/bin
     ";
 

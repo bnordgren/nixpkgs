@@ -1,6 +1,6 @@
 { stdenv, fetchurl
-, SDL, SDL_mixer, gstreamer, gstPluginsBase, gstPluginsGood
-, gstFfmpeg, speex
+, SDL, SDL_mixer, gstreamer, gst_plugins_base, gst_plugins_good
+, gst_ffmpeg, speex
 , libogg, libxml2, libjpeg, mesa, libpng, libungif, libtool
 , boost, freetype, agg, dbus, curl, pkgconfig, gettext
 , glib, gtk, gtkglext, x11, ming, dejagnu, python, perl
@@ -10,14 +10,14 @@
 
 assert stdenv ? glibc;
 
-let version = "0.8.9"; in
+let version = "0.8.10"; in
 
 stdenv.mkDerivation rec {
   name = "gnash-${version}";
 
   src = fetchurl {
     url = "mirror://gnu/gnash/${version}/${name}.tar.bz2";
-    sha256 = "1ga8khwaympj4fphhpyqx6ddcikv0zmcpnlykcipny1xy33bs3gr";
+    sha256 = "090j5lly5r6jzbnvlc3mhay6dsrd9sfrkjcgqaibm4nz8lp0f9cn";
   };
 
   patchPhase = ''
@@ -44,8 +44,8 @@ stdenv.mkDerivation rec {
 
   # XXX: KDE is supported as well so we could make it available optionally.
   buildInputs = [
-    gettext x11 SDL SDL_mixer gstreamer gstPluginsBase gstPluginsGood
-    gstFfmpeg speex libtool
+    gettext x11 SDL SDL_mixer gstreamer gst_plugins_base gst_plugins_good
+    gst_ffmpeg speex libtool
     libogg libxml2 libjpeg mesa libpng libungif boost freetype agg
     dbus curl pkgconfig glib gtk gtkglext
     xulrunner
@@ -61,12 +61,13 @@ stdenv.mkDerivation rec {
          --with-sdl-incl=${SDL}/include/SDL                     \
          --with-npapi-plugindir=$out/plugins                    \
          --enable-media=gst                                     \
+         --without-gconf
          --enable-gui=gtk"
 
-       # In `libmedia', Gnash compiles with "-I$gstPluginsBase/include",
-       # whereas it really needs "-I$gstPluginsBase/include/gstreamer-0.10".
+       # In `libmedia', Gnash compiles with "-I$gst_plugins_base/include",
+       # whereas it really needs "-I$gst_plugins_base/include/gstreamer-0.10".
        # Work around this using GCC's $CPATH variable.
-       export CPATH="${gstPluginsBase}/include/gstreamer-0.10:${gstPluginsGood}/include/gstreamer-0.10"
+       export CPATH="${gst_plugins_base}/include/gstreamer-0.10:${gst_plugins_good}/include/gstreamer-0.10"
        echo "\$CPATH set to \`$CPATH'"
 
        echo "\$GST_PLUGIN_PATH set to \`$GST_PLUGIN_PATH'"
@@ -78,7 +79,7 @@ stdenv.mkDerivation rec {
   # XXX: Tests currently fail.
   doCheck = false;
 
-  preInstall = ''ensureDir $out/plugins'';
+  preInstall = ''mkdir -p $out/plugins'';
   postInstall = ''
     make install-plugins
 
@@ -88,7 +89,7 @@ stdenv.mkDerivation rec {
     do
       wrapProgram "$prog" --prefix                                            \
         GST_PLUGIN_PATH ":"                                                     \
-        "${gstPluginsBase}/lib/gstreamer-0.10:${gstPluginsGood}/lib/gstreamer-0.10:${gstFfmpeg}/lib/gstreamer-0.10"
+        "${gst_plugins_base}/lib/gstreamer-0.10:${gst_plugins_good}/lib/gstreamer-0.10:${gst_ffmpeg}/lib/gstreamer-0.10"
     done
   '';
 

@@ -1,6 +1,5 @@
-{ system, name, preHook ? null, postHook ? null, initialPath, gcc, shell
-, param1 ? "", param2 ? "", param3 ? "", param4 ? "", param5 ? ""
-, extraAttrs ? {}, overrides ? {}
+{ system, name ? "stdenv", preHook ? "", initialPath, gcc, shell
+, extraAttrs ? {}, overrides ? (pkgs: {})
 
 , # The `fetchurl' to use for downloading curl and its dependencies
   # (see all-packages.nix).
@@ -25,10 +24,7 @@ let
 
         setup = setupScript;
 
-        inherit preHook postHook initialPath gcc shell;
-
-        # TODO: make this more elegant.
-        inherit param1 param2 param3 param4 param5;
+        inherit preHook initialPath gcc shell;
 
         propagatedUserEnvPkgs = [gcc] ++
           lib.filter lib.isDerivation initialPath;
@@ -91,25 +87,28 @@ let
 
         # Utility flags to test the type of platform.
         isDarwin = result.system == "i686-darwin"
-	       || result.system == "powerpc-darwin"
-	       || result.system == "x86_64-darwin";
+               || result.system == "powerpc-darwin"
+               || result.system == "x86_64-darwin";
         isLinux = result.system == "i686-linux"
                || result.system == "x86_64-linux"
                || result.system == "powerpc-linux"
                || result.system == "armv5tel-linux"
+               || result.system == "armv7l-linux"
                || result.system == "mips64el-linux";
+        isGNU = result.system == "i686-gnu";      # GNU/Hurd
         isSunOS = result.system == "i686-solaris"
                || result.system == "x86_64-solaris";
         isCygwin = result.system == "i686-cygwin";
-	isFreeBSD = result.system == "i686-freebsd"
-	       || result.system == "x86_64-freebsd";
-	isOpenBSD = result.system == "i686-openbsd"
-	       || result.system == "x86_64-openbsd";
-	isBSD = result.system == "i686-freebsd"
-	       || result.system == "x86_64-freebsd"
-	       || result.system == "i686-openbsd"
-	       || result.system == "x86_64-openbsd";
+        isFreeBSD = result.system == "i686-freebsd"
+               || result.system == "x86_64-freebsd";
+        isOpenBSD = result.system == "i686-openbsd"
+               || result.system == "x86_64-openbsd";
+        isBSD = result.system == "i686-freebsd"
+               || result.system == "x86_64-freebsd"
+               || result.system == "i686-openbsd"
+               || result.system == "x86_64-openbsd";
         isi686 = result.system == "i686-linux"
+               || result.system == "i686-gnu"
                || result.system == "i686-darwin"
                || result.system == "i686-freebsd"
                || result.system == "i686-openbsd"
@@ -122,7 +121,8 @@ let
                 || result.system == "x86_64-darwin";
         isMips = result.system == "mips-linux"
                 || result.system == "mips64el-linux";
-        isArm = result.system == "armv5tel-linux";
+        isArm = result.system == "armv5tel-linux"
+             || result.system == "armv7l-linux";
 
         # Utility function: allow stdenv to be easily regenerated with
         # a different setup script.  (See all-packages.nix for an

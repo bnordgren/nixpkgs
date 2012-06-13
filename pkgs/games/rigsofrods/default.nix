@@ -1,4 +1,4 @@
-{ fetchsvn, fetchurl, stdenv, wxGTK290, freeimage, cmake, zziplib, mesa, boost, 
+{ fetchsvn, fetchurl, stdenv, wxGTK29, freeimage, cmake, zziplib, mesa, boost,
   pkgconfig, libuuid, openal, ogre, ois, curl, gtk, pixman, mygui, unzip,
   angelscript, caelum, ogrepaged, mysocketw, libxcb
   }:
@@ -32,10 +32,10 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     sed -e "s@/usr/local/lib/OGRE@${ogre}/lib/OGRE@" -i ../tools/linux/binaries/plugins.cfg
-    ensureDir $out/share/rigsofrods
+    mkdir -p $out/share/rigsofrods
     cp -r ../bin/* $out/share/rigsofrods
     cp ../tools/linux/binaries/plugins.cfg $out/share/rigsofrods
-    ensureDir $out/bin
+    mkdir -p $out/bin
     ln -s $out/share/rigsofrods/{RoR,rorconfig} $out/bin
     cd $out/share/rigsofrods
     mkdir packs
@@ -45,7 +45,7 @@ stdenv.mkDerivation rec {
 
   patches = [ ./doubleslash.patch ./paths.patch ];
 
-  buildInputs = [ wxGTK290 freeimage cmake zziplib mesa boost pkgconfig
+  buildInputs = [ wxGTK29 freeimage cmake zziplib mesa boost pkgconfig
     libuuid openal ogre ois curl gtk mygui unzip angelscript
     caelum ogrepaged mysocketw libxcb ];
 
