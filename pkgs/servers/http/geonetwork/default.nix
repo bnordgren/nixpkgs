@@ -1,12 +1,13 @@
-{stdenv, fetchurl}:
+{stdenv, fetchsvn, jre, ant, maven2 }:
 
 stdenv.mkDerivation {
-  name = "geonetwork-2.6.4";
+  version = "2.6.4" ;
+  name = "geonetwork-2.6.4" ;
+  buildInputs = [ jre ant maven2] ; 
 
   builder = ./builder.sh ; 
 
-  src = fetchurl {
-    url = mirror://sourceforge/geonetwork/geonetwork.war;
-    sha256 = "1awci5fs7a73p9i8rn31pkwdsd1v9f6qchqqmcacvihz44xgb7wv";
+  src = fetchsvn {
+    url = "https://geonetwork.svn.sourceforge.net/svnroot/geonetwork/tags/2.6.4" ; 
   };
 }
